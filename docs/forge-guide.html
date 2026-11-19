@@ -1,0 +1,482 @@
+<title>Forge Field Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: single readable column; terminal "receipts" break slightly wider; numbered steps because the order matters. */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --ink: #141920;
+  --muted: #586373;
+  --line: #d8dee6;
+  --accent: #c94a17;        /* forge ember */
+  --accent-soft: #fbe9e0;
+  --term-bg: #12161c;
+  --term-ink: #d7dde6;
+  --term-dim: #7f8a99;
+  --term-prompt: #f08a4b;
+  --term-ok: #7fc99a;
+  --term-err: #f07f7f;
+  --term-note: #8fb4e0;
+  --f-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e1116; --surface: #161b22; --ink: #e8ecf1; --muted: #9ba6b5;
+    --line: #29313c; --accent: #f07a3e; --accent-soft: #2a1a12;
+    --term-bg: #0a0d11;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1116; --surface: #161b22; --ink: #e8ecf1; --muted: #9ba6b5;
+  --line: #29313c; --accent: #f07a3e; --accent-soft: #2a1a12;
+  --term-bg: #0a0d11;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.65 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 48px 72px; display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; letter-spacing: -0.01em; }
+h3 { font-size: 1.15rem; }
+p { margin: 0; max-width: 65ch; }
+a { color: var(--accent); }
+code { font-family: var(--f-mono); font-size: 0.88em; background: var(--accent-soft); color: var(--ink); padding: 1px 6px; border-radius: 4px; }
+.eyebrow { font: 600 0.75rem/1 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+section { display: grid; gap: 18px; }
+.lede { font-size: 1.15rem; color: var(--muted); }
+
+header { display: grid; gap: 18px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.facts span { font: 500 0.8rem/1 var(--f-mono); border: 1px solid var(--line); background: var(--surface); padding: 7px 10px; border-radius: 999px; color: var(--muted); }
+
+/* terminal receipts */
+.term { background: var(--term-bg); color: var(--term-ink); border-radius: 10px; overflow: hidden; }
+.term-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1px solid #ffffff14; font: 500 0.75rem/1 var(--f-mono); color: var(--term-dim); }
+.term pre { margin: 0; padding: 14px 16px 16px; overflow-x: auto; font: 0.84rem/1.6 var(--f-mono); white-space: pre; }
+.term .p { color: var(--term-prompt); user-select: none; }
+.term .c { color: var(--term-ink); font-weight: 600; }
+.term .d { color: var(--term-dim); }
+.term .ok { color: var(--term-ok); }
+.term .err { color: var(--term-err); }
+.term .n { color: var(--term-note); }
+.term .in { color: #f2d48a; }
+.copy { font: 500 0.72rem/1 var(--f-mono); background: transparent; color: var(--term-dim); border: 1px solid #ffffff26; border-radius: 6px; padding: 5px 9px; cursor: pointer; }
+.copy:hover { color: var(--term-ink); border-color: #ffffff55; }
+.copy:focus-visible, .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* steps */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; counter-reset: step; }
+.steps > li { display: grid; grid-template-columns: 44px 1fr; gap: 16px; counter-increment: step; }
+.steps > li::before {
+  content: counter(step); font: 700 1.1rem/44px var(--f-display); text-align: center;
+  width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff;
+}
+.step-body { display: grid; gap: 12px; min-width: 0; }
+.note { font-size: 0.92rem; color: var(--muted); border-left: 3px solid var(--line); padding-left: 12px; }
+
+/* explorer */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { font: 600 0.85rem/1 var(--f-mono); border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 9px 12px; border-radius: 8px; cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.explain { color: var(--muted); font-size: 0.95rem; }
+
+/* tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 600 0.72rem/1.2 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+td:first-child { white-space: nowrap; }
+td code { background: transparent; padding: 0; color: var(--accent); }
+
+.prompt { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 10px; }
+.prompt p { font-size: 0.97rem; }
+.prompt .label { font: 600 0.75rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.prompt-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.prompt .copy { color: var(--muted); border-color: var(--line); }
+.prompt .copy:hover { color: var(--ink); }
+
+.safety { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.safety div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.safety strong { font-family: var(--f-display); }
+.safety span { color: var(--muted); font-size: 0.92rem; }
+footer { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 20px; }
+
+@media (max-width: 480px) {
+  .steps > li { grid-template-columns: 1fr; }
+  .steps > li::before { width: 36px; height: 36px; line-height: 36px; font-size: 1rem; }
+}
+@media (prefers-reduced-motion: no-preference) { .tab, .copy { transition: background .15s, color .15s, border-color .15s; } }
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">forge v0.1.1 · field guide</span>
+  <h1>Start every project with the right bones</h1>
+  <p class="lede">forge is a command you type once at the start of a project. In about a second it builds the folder structure, tests, docs, license and automatic checks that professional teams use, so you (and your AI assistant) build on a solid base instead of a pile of loose files.</p>
+  <div class="facts">
+    <span>Go · Python · Node · Rust</span>
+    <span>never overwrites your files</span>
+    <span>preview before it writes</span>
+  </div>
+</header>
+
+<section>
+  <span class="eyebrow">Why this helps when you vibe code</span>
+  <h2>AI writes better code into a good structure</h2>
+  <p>When you ask an AI to "make me an app", it invents a layout every time. Some files land in odd places, there are no tests, and nothing warns you when a change breaks something. forge fixes the starting point: the AI gets a known layout with a working test it can copy, and GitHub runs the checks for you on every push.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Before you start</span>
+  <h2>Install it once</h2>
+  <p>You need Go installed (it is on this machine already). Then one command puts <code>forge</code> on your computer:</p>
+  <div class="term">
+    <div class="term-bar"><span>terminal</span><button class="copy" data-copy="go install github.com/DanielTso/forge@latest" type="button">Copy</button></div>
+<pre><span class="p">$ </span><span class="c">go install github.com/DanielTso/forge@latest</span>
+<span class="p">$ </span><span class="c">forge --version</span>
+<span class="d">forge v0.1.1 (none)</span>
+<span class="p">$ </span><span class="c">forge list</span>
+<span class="d">TYPE        DESCRIPTION
+go-cli      Go command-line application …</span></pre>
+  </div>
+  <p class="note">If <code>forge</code> isn't found after installing, open a new terminal so it picks up Go's install folder (<code>~/go/bin</code>).</p>
+  <p class="note">No Go? Download a ready-made file for Windows, Mac or Linux from the <a href="https://github.com/DanielTso/forge/releases/latest">latest release page</a>, unzip it, and run it.</p>
+</section>
+
+<section>
+  <span class="eyebrow">Walkthrough · recorded on this machine</span>
+  <h2>Build a to-do app's skeleton in six steps</h2>
+  <p>Everything below is real output from running forge, copied as-is. Lines in yellow are what was typed at the prompts.</p>
+
+  <ol class="steps">
+    <li><div class="step-body">
+      <h3>See what you can make</h3>
+      <p>Each type is a different kind of project. Pick the language you (or your AI) will write.</p>
+      <div class="term"><div class="term-bar"><span>forge list</span><button class="copy" data-copy="forge list" type="button">Copy</button></div>
+<pre><span class="p">$ </span><span class="c">forge list</span>
+TYPE        DESCRIPTION
+go-cli      Go command-line application (cmd/, internal/, Makefile, CI)
+go-service  Go HTTP service with health check, graceful shutdown, Dockerfile
+go-lib      Go library with examples and CI
+python      Python package (src layout, pyproject.toml, pytest, ruff, mypy, CI)
+node        Node.js CLI/library (ESM, node:test, ESLint, CI)
+rust        Rust binary + library crate (cargo, rustfmt, clippy, CI)
+generic     Language-agnostic project: README, LICENSE, docs/, contributing guides
+
+Licenses: Apache-2.0, BSD-3-Clause, MIT, none</pre></div>
+    </div></li>
+
+    <li><div class="step-body">
+      <h3>Preview without touching anything</h3>
+      <p>Add <code>--dry-run</code> to see exactly which files would be created. Nothing is written.</p>
+      <div class="term"><div class="term-bar"><span>dry run</span><button class="copy" data-copy="forge new todo-app --dry-run" type="button">Copy</button></div>
+<pre><span class="p">$ </span><span class="c">forge new todo-app --dry-run</span>
+Would create go-cli project "todo-app" in ./todo-app:
+  .editorconfig
+  .github/workflows/ci.yml
+  .gitignore
+  CHANGELOG.md
+  <span class="d">… 13 more files</span></pre></div>
+    </div></li>
+
+    <li><div class="step-body">
+      <h3>Create it by answering a few questions</h3>
+      <p>Type just <code>forge new</code> and it asks you everything. Press Enter to accept the suggestion in [brackets].</p>
+      <div class="term"><div class="term-bar"><span>interactive</span><button class="copy" data-copy="forge new" type="button">Copy</button></div>
+<pre><span class="p">$ </span><span class="c">forge new</span>
+Let's set up your project (press Enter to accept the default).
+Project name: <span class="in">todo-app</span>
+Project type:
+  1) go-cli      Go command-line application (cmd/, internal/, Makefile, CI)
+  2) go-service  Go HTTP service with health check, graceful shutdown, Dockerfile
+  3) go-lib      Go library with examples and CI
+  4) python      Python package (src layout, pyproject.toml, pytest, ruff, mypy, CI)
+  5) node        Node.js CLI/library (ESM, node:test, ESLint, CI)
+  6) rust        Rust binary + library crate (cargo, rustfmt, clippy, CI)
+  7) generic     Language-agnostic project: README, LICENSE, docs/, contributing guides
+Choose [1]: <span class="in">1</span>
+Description: <span class="in">A tiny to-do list app</span>
+Go module path [todo-app]: <span class="in">github.com/DanielTso/todo-app</span>
+Author [DanielTso]: <span class="d">⏎</span>
+License (Apache-2.0, BSD-3-Clause, MIT, none) [MIT]: <span class="d">⏎</span>
+
+<span class="ok">Created go-cli project "todo-app"</span>
+<span class="d">  … 17 files listed …</span>
+
+<span class="ok">Initialized a git repository (branch: main).</span>
+
+Next steps:
+  cd todo-app
+  make test
+  make run</pre></div>
+      <p class="note">Prefer one line? <code>forge new todo-app -t python</code> skips the questions and uses sensible defaults.</p>
+    </div></li>
+
+    <li><div class="step-body">
+      <h3>Look at what you got</h3>
+      <p>The blue notes explain each part in plain words. You will mostly work in <code>internal/app/</code>; the rest is the scaffolding that keeps the project healthy.</p>
+      <div class="term"><div class="term-bar"><span>todo-app/</span></div>
+<pre>todo-app/
+├── .github/
+│   ├── ISSUE_TEMPLATE/bug_report.md   <span class="n"># form people fill in to report bugs</span>
+│   ├── workflows/ci.yml               <span class="n"># GitHub re-runs your tests on every push</span>
+│   └── pull_request_template.md       <span class="n"># checklist for proposed changes</span>
+├── cmd/todo-app/main.go               <span class="n"># the "on" switch: starts the program</span>
+├── docs/
+│   ├── README.md                      <span class="n"># index of your documentation</span>
+│   └── architecture.md                <span class="n"># map of how the code is organised</span>
+├── internal/app/
+│   ├── app.go                         <span class="n"># ← your actual app logic goes here</span>
+│   └── app_test.go                    <span class="n"># tests that prove it works</span>
+├── .editorconfig                      <span class="n"># keeps spacing consistent in any editor</span>
+├── .gitignore                         <span class="n"># files git should never save</span>
+├── .golangci.yml                      <span class="n"># rules for the code-quality checker</span>
+├── CHANGELOG.md                       <span class="n"># what changed in each version</span>
+├── CONTRIBUTING.md                    <span class="n"># how others can help</span>
+├── LICENSE                            <span class="n"># MIT, with your name and the year</span>
+├── Makefile                           <span class="n"># shortcuts: make test, make run …</span>
+├── README.md                          <span class="n"># the project's front page</span>
+└── go.mod                             <span class="n"># the project's name and Go version</span>
+
+<span class="d">9 directories, 17 files</span></pre></div>
+    </div></li>
+
+    <li><div class="step-body">
+      <h3>Prove it works</h3>
+      <p>The project runs and passes its tests before you write a single line. That gives you (and your AI) a working baseline to compare against.</p>
+      <div class="term"><div class="term-bar"><span>inside todo-app/</span><button class="copy" data-copy="cd todo-app && make test && make run" type="button">Copy</button></div>
+<pre><span class="p">$ </span><span class="c">cd todo-app</span>
+<span class="p">$ </span><span class="c">make test</span>
+go test -race -cover ./...
+<span class="ok">ok</span>  	github.com/DanielTso/todo-app/internal/app	1.023s	coverage: 100.0% of statements
+<span class="p">$ </span><span class="c">make run</span>
+Hello from todo-app!</pre></div>
+      <p class="note">Not sure what shortcuts exist? <code>make help</code> lists every one with a short description.</p>
+    </div></li>
+
+    <li><div class="step-body">
+      <h3>Add pieces later, safely</h3>
+      <p>Decided you want Docker, CI or a license after the fact? <code>forge add</code> drops in just that piece, matched to your language. Run it twice and it refuses rather than overwrite your work.</p>
+      <div class="term"><div class="term-bar"><span>forge add</span><button class="copy" data-copy="forge add dockerfile" type="button">Copy</button></div>
+<pre><span class="p">$ </span><span class="c">forge add dockerfile</span>
+<span class="ok">Added dockerfile to this go-cli project:</span>
+  .dockerignore
+  Dockerfile
+
+<span class="p">$ </span><span class="c">forge add dockerfile</span>
+<span class="err">Error: 2 file(s) already exist: .dockerignore, Dockerfile (use --force to overwrite)</span></pre></div>
+      <p class="note">Type <code>forge add</code> on its own to see all the pieces: ci, dockerfile, license, gitignore, editorconfig, changelog, contributing, github, docs, makefile, lint.</p>
+    </div></li>
+  </ol>
+</section>
+
+<section>
+  <span class="eyebrow">Explore</span>
+  <h2>What each project type looks like</h2>
+  <p>Every type shares the same base (README, LICENSE, docs, CI, issue templates). The difference is where the code lives and which tools check it.</p>
+  <div class="tabs" role="tablist" aria-label="Project type">
+    <button class="tab" role="tab" id="tab-go-cli" aria-selected="true" data-type="go-cli" type="button">go-cli</button>
+    <button class="tab" role="tab" id="tab-go-service" aria-selected="false" data-type="go-service" type="button">go-service</button>
+    <button class="tab" role="tab" id="tab-python" aria-selected="false" data-type="python" type="button">python</button>
+    <button class="tab" role="tab" id="tab-node" aria-selected="false" data-type="node" type="button">node</button>
+    <button class="tab" role="tab" id="tab-rust" aria-selected="false" data-type="rust" type="button">rust</button>
+  </div>
+  <p class="explain" id="explain"></p>
+  <div class="term" role="tabpanel" aria-labelledby="tab-go-cli" id="tree-panel">
+    <div class="term-bar"><span id="tree-cmd"></span><button class="copy" id="tree-copy" type="button">Copy</button></div>
+    <pre id="tree"></pre>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Working with Claude</span>
+  <h2>Prompts you can paste</h2>
+  <p>forge is fastest when you let your AI assistant drive it. Copy one of these into Claude Code and change the words in capitals.</p>
+  <div class="prompt">
+    <div class="prompt-row"><span class="label">Start a new project</span><button class="copy" type="button" data-copy-from="p1">Copy</button></div>
+    <p id="p1">Use forge to create a new python project called MY-APP with the description "WHAT IT DOES". Then build that feature inside src/, add tests in tests/ for every function you write, and run make check until it passes.</p>
+  </div>
+  <div class="prompt">
+    <div class="prompt-row"><span class="label">Fix up an existing folder</span><button class="copy" type="button" data-copy-from="p2">Copy</button></div>
+    <p id="p2">In this folder, run forge add --dry-run with ci, gitignore, license and docs, show me what it would create, then add the ones that don't already exist.</p>
+  </div>
+  <div class="prompt">
+    <div class="prompt-row"><span class="label">Ship it</span><button class="copy" type="button" data-copy-from="p3">Copy</button></div>
+    <p id="p3">Run make check. If anything fails, fix it. Then update CHANGELOG.md with what we built, commit everything, and tell me the command to publish it to GitHub.</p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Cheat sheet</span>
+  <h2>The commands you'll actually use</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Type this</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td><code>forge new</code></td><td>Asks you questions, then builds the project</td></tr>
+      <tr><td><code>forge new my-app -t python</code></td><td>Builds a Python project in <code>./my-app</code> right away</td></tr>
+      <tr><td><code>forge new my-app --dry-run</code></td><td>Shows what would be created; writes nothing</td></tr>
+      <tr><td><code>forge init</code></td><td>Same as <code>new</code>, but fills the folder you're already in</td></tr>
+      <tr><td><code>forge add</code></td><td>Lists pieces you can add to an existing project</td></tr>
+      <tr><td><code>forge add ci license</code></td><td>Adds those pieces, matched to the project's language</td></tr>
+      <tr><td><code>forge list</code></td><td>Shows project types and licenses</td></tr>
+      <tr><td><code>make help</code></td><td>Inside a project: lists its shortcuts (test, run, lint …)</td></tr>
+      <tr><td><code>make check</code></td><td>Inside a project: format, lint and test in one go</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <span class="eyebrow">Safety net</span>
+  <h2>Hard to break things with it</h2>
+  <div class="safety">
+    <div><strong>Never overwrites</strong><span>If any file already exists, forge stops and writes nothing at all, unless you add <code>--force</code>.</span></div>
+    <div><strong>Preview first</strong><span><code>--dry-run</code> on <code>new</code>, <code>init</code> or <code>add</code> shows the plan and marks files that already exist.</span></div>
+    <div><strong>Works offline</strong><span>All templates are built into the program. It never downloads anything or sends your code anywhere.</span></div>
+  </div>
+</section>
+
+<footer>
+  forge v0.1.1 · source and downloads at <a href="https://github.com/DanielTso/forge">github.com/DanielTso/forge</a> · all terminal output on this page was recorded from real runs on 18 Nov 2026.
+</footer>
+</div>
+
+<script>
+(function () {
+  const TREES = {
+    "go-cli": {
+      cmd: "forge new todo-app -t go-cli",
+      explain: "A command-line program in Go. Logic lives in internal/app; cmd/ just starts it. Smallest Docker image of the lot (3.6 MB).",
+      tree: `todo-app/
+├── .github/            <n># CI, issue & PR templates</n>
+├── cmd/todo-app/
+│   └── main.go         <n># starts the program</n>
+├── docs/
+├── internal/app/
+│   ├── app.go          <n># ← your code</n>
+│   └── app_test.go
+├── .golangci.yml       <n># lint rules</n>
+├── Makefile
+├── README.md · LICENSE · CHANGELOG.md · CONTRIBUTING.md
+└── go.mod`
+    },
+    "go-service": {
+      cmd: "forge new acme-api -t go-service",
+      explain: "A small web server (an API). Comes with a /healthz address that answers {\"status\":\"ok\"}, shuts down cleanly, and ships with a Dockerfile.",
+      tree: `acme-api/
+├── .github/
+├── cmd/acme-api/
+│   └── main.go         <n># starts the server on :8080</n>
+├── docs/
+├── internal/server/
+│   ├── server.go       <n># ← your web routes</n>
+│   └── server_test.go
+├── Dockerfile          <n># package it for any cloud</n>
+├── .dockerignore
+├── .golangci.yml
+├── Makefile            <n># make run, make docker …</n>
+├── README.md · LICENSE · CHANGELOG.md · CONTRIBUTING.md
+└── go.mod`
+    },
+    "python": {
+      cmd: "forge new notes-tool -t python",
+      explain: "A Python package with a command-line entry point. Uses pytest for tests, ruff for style and mypy for type checks. Run make install first; it creates a private .venv.",
+      tree: `notes-tool/
+├── .github/
+├── docs/
+├── src/notes_tool/
+│   ├── __init__.py     <n># ← your code</n>
+│   ├── __main__.py     <n># lets "python -m notes_tool" work</n>
+│   └── cli.py          <n># command-line options</n>
+├── tests/
+│   └── test_cli.py
+├── Makefile            <n># make install, make test …</n>
+├── pyproject.toml      <n># name, version, tool settings</n>
+└── README.md · LICENSE · CHANGELOG.md · CONTRIBUTING.md`
+    },
+    "node": {
+      cmd: "forge new my-node -t node",
+      explain: "A JavaScript (Node.js) project. Tests use Node's built-in runner, so they work with zero downloads; ESLint checks style after npm install.",
+      tree: `my-node/
+├── .github/
+├── bin/
+│   └── my-node.js      <n># the command people run</n>
+├── docs/
+├── src/
+│   └── index.js        <n># ← your code</n>
+├── test/
+│   └── index.test.js
+├── eslint.config.js    <n># style rules</n>
+├── Makefile
+├── package.json        <n># name, scripts, dependencies</n>
+└── README.md · LICENSE · CHANGELOG.md · CONTRIBUTING.md`
+    },
+    "rust": {
+      cmd: "forge new my-rust -t rust",
+      explain: "A Rust program split into a library (lib.rs, easy to test) and a thin main.rs. cargo fmt, clippy and tests are wired into make check.",
+      tree: `my-rust/
+├── .github/
+├── docs/
+├── src/
+│   ├── lib.rs          <n># ← your code</n>
+│   └── main.rs         <n># starts the program</n>
+├── tests/
+│   └── cli.rs          <n># runs the real binary</n>
+├── Cargo.toml          <n># name, version, dependencies</n>
+├── rustfmt.toml
+├── Makefile
+└── README.md · LICENSE · CHANGELOG.md · CONTRIBUTING.md`
+    }
+  };
+
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const render = t => esc(t).replace(/&lt;n&gt;(.*?)&lt;\/n&gt;/g, '<span class="n">$1</span>');
+
+  const tabs = document.querySelectorAll(".tab");
+  const panel = document.getElementById("tree-panel");
+  function show(type) {
+    const d = TREES[type];
+    document.getElementById("tree").innerHTML = render(d.tree);
+    document.getElementById("tree-cmd").textContent = d.cmd;
+    document.getElementById("tree-copy").dataset.copy = d.cmd;
+    document.getElementById("explain").textContent = d.explain;
+    tabs.forEach(t => t.setAttribute("aria-selected", String(t.dataset.type === type)));
+    panel.setAttribute("aria-labelledby", "tab-" + type);
+  }
+  tabs.forEach(t => t.addEventListener("click", () => show(t.dataset.type)));
+  show("go-cli");
+
+  async function copyText(btn, text) {
+    const original = btn.textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "Copied";
+    } catch (e) {
+      btn.textContent = "Select & Ctrl+C";
+    }
+    setTimeout(() => { btn.textContent = original; }, 1600);
+  }
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".copy");
+    if (!btn) return;
+    const text = btn.dataset.copyFrom
+      ? document.getElementById(btn.dataset.copyFrom).textContent.trim()
+      : btn.dataset.copy;
+    if (text) copyText(btn, text);
+  });
+})();
+</script>

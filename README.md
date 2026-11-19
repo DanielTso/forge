@@ -148,6 +148,12 @@ make install  # from a checkout (embeds version info)
 make snapshot # build release archives locally with GoReleaser; nothing is published
 ```
 
+Documentation sources:
+
+- `scripts/wiki/gen-wiki.sh <dir>` regenerates the [wiki](https://github.com/DanielTso/forge/wiki) pages
+  from real `forge` output; copy them into a clone of `forge.wiki.git` and push.
+- `docs/forge-guide.html` is the source of the beginner's visual guide.
+
 Releases: add the changes to `CHANGELOG.md`, then push a `vX.Y.Z` tag. The Release workflow builds
 and publishes archives for 6 OS/arch targets.
 
