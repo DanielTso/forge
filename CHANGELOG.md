@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-19
+
+### Added
+
+- `forge upgrade`: updates an existing project's GitHub Actions pins (`uses: owner/action@vN`) to the
+  versions forge's templates use, changing only the version text. It never downgrades, leaves SHA and
+  branch pins and unknown actions alone, supports `--dry-run`, and suggests `forge add dependabot` / `ci`
+  when missing. A test guarantees freshly generated projects never need an upgrade.
+
 ## [0.2.1] - 2026-11-19
 
 ### Changed
@@ -81,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integration tests run each generated project's own toolchain (golangci-lint; ruff, mypy and
   pytest; node --test; cargo fmt, clippy and test).
 
-[Unreleased]: https://github.com/DanielTso/forge/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/DanielTso/forge/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/DanielTso/forge/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/DanielTso/forge/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/DanielTso/forge/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/DanielTso/forge/compare/v0.1.2...v0.1.3

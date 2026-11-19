@@ -29,7 +29,7 @@ Run "forge list" to see the available project types.`,
 	}
 	root.SetVersionTemplate("forge {{.Version}}\n")
 
-	root.AddCommand(newNewCmd(), newInitCmd(), newAddCmd(), newListCmd())
+	root.AddCommand(newNewCmd(), newInitCmd(), newAddCmd(), newUpgradeCmd(), newListCmd())
 	return root
 }
 

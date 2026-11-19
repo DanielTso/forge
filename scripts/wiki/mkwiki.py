@@ -27,6 +27,7 @@ ok   github.com/you/todo-app/internal/app   coverage: 100.0% of statements
 | Make your first project in 5 minutes | [Quick Start](Quick-Start) |
 | Choose between Go, Python, TypeScript, Deno, Rust, Gleam, Zig… | [Project Types](Project-Types) |
 | Add CI, Docker or a license to an existing project | [Adding Components](Adding-Components) |
+| Update an existing project's GitHub Actions | [Upgrading Projects](Upgrading-Projects) |
 | Build with Claude or another AI assistant | [Using forge with AI](Using-forge-with-AI) |
 | Look up a flag | [Command Reference](Command-Reference) |
 | Understand what forge will and won't touch | [How forge Keeps You Safe](How-forge-Keeps-You-Safe) |
@@ -290,6 +291,46 @@ $ forge add dependabot github                # keep deps current + issue/PR temp
 - **Some pieces don't fit some types:** `dockerfile` is refused for libraries, `gleam`, `zig` and `generic` projects; `ci` needs a language.
 """
 
+P["Upgrading-Projects"] = """# Upgrading Projects
+
+GitHub Actions publish new major versions regularly (`actions/checkout@v4`, `@v5`, … `@v7`). Old pins
+keep working for a while, then start printing deprecation warnings, and eventually break. `forge upgrade`
+moves an existing project's workflows to the versions forge's templates use today.
+
+```console
+$ forge upgrade --dry-run
+Would update 2 action pin(s):
+  .github/workflows/ci.yml:18  actions/checkout  v4 -> v7
+  .github/workflows/ci.yml:19  actions/setup-python  v5 -> v7
+
+Suggested: forge add dependabot
+
+$ forge upgrade
+Updated 2 action pin(s):
+  ...
+```
+
+*(Real output from a project made by forge v0.1.2.)*
+
+## What it changes, and what it never touches
+
+| Changes | Leaves alone |
+|---|---|
+| The version after `@` on a `uses:` line, when it's an older major version (`@v4`, `@v5.0.1`) of an action forge's templates use | Everything else in the file: steps, comments, quotes, indentation |
+| | Pins that are already as new or newer (it never downgrades) |
+| | Pins to a commit SHA (`@0123abc…`) or a branch (`@main`) |
+| | Actions forge's templates don't use, local actions (`./my-action`) |
+
+It works on **any** project with `.github/workflows/`, whether or not forge made it. Run it twice and the
+second run reports *up to date*.
+
+## Keeping current afterwards
+
+If the project has no `.github/dependabot.yml`, `forge upgrade` suggests `forge add dependabot`. Dependabot then
+opens a pull request whenever an action (or a dependency) has a new version, so you rarely need `forge upgrade`
+again. Each forge release also updates its own templates, so `forge upgrade` with a newer forge brings newer pins.
+"""
+
 P["Interactive-Mode"] = """# Interactive Mode
 
 forge can ask you questions instead of making you remember flags.
@@ -333,8 +374,8 @@ forge new my-api -t go-service -i
 Asks only for the description, module path, author and license.
 """
 
-P["Command-Reference"] = "# Command Reference\n\nOutput of each command's `--help`, from forge v0.2.0.\n\n" + "".join(
-    f"## `forge {c}`\n\n```text\n{helptext(*([c] if c else []), '--help')}\n```\n\n" for c in ["", "new", "init", "add"]
+P["Command-Reference"] = "# Command Reference\n\nOutput of each command's `--help`, from forge v0.3.0.\n\n" + "".join(
+    f"## `forge {c}`\n\n```text\n{helptext(*([c] if c else []), '--help')}\n```\n\n" for c in ["", "new", "init", "add", "upgrade"]
 ) + """## `forge list`
 
 Prints project types and licenses. No flags.
@@ -538,6 +579,7 @@ P["_Sidebar"] = """**[Home](Home)**
 - [Quick Start](Quick-Start)
 - [Project Types](Project-Types)
 - [Adding Components](Adding-Components)
+- [Upgrading Projects](Upgrading-Projects)
 - [Interactive Mode](Interactive-Mode)
 - [Command Reference](Command-Reference)
 

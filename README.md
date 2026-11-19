@@ -71,6 +71,7 @@ forge new my-lib -t go-lib -l Apache-2.0 --dry-run   # preview only
 mkdir notes && cd notes && forge init -t generic     # scaffold in the current directory
 forge add                                    # list components
 forge add ci dockerfile                      # add pieces to an existing project
+forge upgrade --dry-run                      # update an existing project's GitHub Actions versions
 ```
 
 ### Interactive mode
@@ -123,6 +124,16 @@ manifest (or `cmd/<name>`), then falls back to the directory name (`--name` over
 | `lint` | `.golangci.yml`, `rustfmt.toml` or `eslint.config.js` |
 
 All components are validated before anything is written, and `--dry-run` / `--force` behave as above.
+
+### `forge upgrade`
+
+Updates the GitHub Actions pinned in an existing project's `.github/workflows/` to the versions forge's
+templates use today (for example `actions/checkout@v4` → `@v7`). Works on any project, not only ones forge made.
+
+- Only the version on each `uses:` line changes; comments, quotes and everything else stay as written.
+- Never downgrades; pins to a commit SHA or a branch are left alone; actions forge doesn't use are left alone.
+- `--dry-run` lists every change with its file and line. Running it twice changes nothing the second time.
+- Suggests `forge add dependabot` (and `ci`) when they're missing. Dependabot then keeps the versions current.
 
 ## Project types
 

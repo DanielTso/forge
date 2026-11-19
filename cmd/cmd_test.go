@@ -399,3 +399,37 @@ func TestAddDryRunAndErrors(t *testing.T) {
 		t.Errorf("bare add should list components: %v\n%s", err, out)
 	}
 }
+
+func TestUpgradeCommand(t *testing.T) {
+	dir := t.TempDir()
+	wf := filepath.Join(dir, ".github", "workflows", "ci.yml")
+	if err := os.MkdirAll(filepath.Dir(wf), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	body := "jobs:\n  t:\n    steps:\n      - uses: actions/checkout@v2\n"
+	if err := os.WriteFile(wf, []byte(body), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	t.Chdir(dir)
+
+	out, err := run(t, "upgrade", "--dry-run")
+	if err != nil || !strings.Contains(out, "Would update 1 action pin") || !strings.Contains(out, "forge add dependabot") {
+		t.Fatalf("dry run: %v\n%s", err, out)
+	}
+	if b, _ := os.ReadFile(wf); string(b) != body {
+		t.Fatal("--dry-run wrote the file")
+	}
+
+	out, err = run(t, "upgrade")
+	if err != nil || !strings.Contains(out, "Updated 1 action pin") {
+		t.Fatalf("upgrade: %v\n%s", err, out)
+	}
+	if b, _ := os.ReadFile(wf); strings.Contains(string(b), "@v2") {
+		t.Errorf("pin not updated:\n%s", b)
+	}
+
+	out, _ = run(t, "upgrade")
+	if !strings.Contains(out, "up to date") {
+		t.Errorf("second run should report up to date:\n%s", out)
+	}
+}
