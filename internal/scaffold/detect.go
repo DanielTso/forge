@@ -38,8 +38,20 @@ func Detect(dir string) (Detected, error) {
 				d.Name = cmds[0]
 			}
 		}
+	// Python comes before the JS/TS runtimes: a Python app with a TypeScript or Deno frontend is a
+	// Python project (and was detected as one before those types existed).
+	case exists(dir, "pyproject.toml"):
+		d.Type = "python"
+		d.Name = tomlName(filepath.Join(dir, "pyproject.toml"), "project")
 	case exists(dir, "deno.json") || exists(dir, "deno.jsonc"):
 		d.Type = "deno"
+		// deno.jsonc may hold comments, which the JSON reader declines; the name is then left unset.
+		for _, f := range []string{"deno.json", "deno.jsonc"} {
+			if n := packageJSONName(filepath.Join(dir, f)); n != "" {
+				d.Name = n
+				break
+			}
+		}
 	case exists(dir, "gleam.toml"):
 		d.Type = "gleam"
 		d.Name = tomlName(filepath.Join(dir, "gleam.toml"), "")
@@ -49,9 +61,6 @@ func Detect(dir string) (Detected, error) {
 	case exists(dir, "package.json") && exists(dir, "tsconfig.json"):
 		d.Type = "typescript"
 		d.Name = packageJSONName(filepath.Join(dir, "package.json"))
-	case exists(dir, "pyproject.toml"):
-		d.Type = "python"
-		d.Name = tomlName(filepath.Join(dir, "pyproject.toml"), "project")
 	case exists(dir, "package.json"):
 		d.Type = "node"
 		d.Name = packageJSONName(filepath.Join(dir, "package.json"))
@@ -99,10 +108,13 @@ func zonName(file string) string {
 	if m == nil {
 		return ""
 	}
-	return string(m[1])
+	if len(m[1]) > 0 { // quoted form: .name = .@"my-lib"
+		return string(m[1])
+	}
+	return string(m[2])
 }
 
-var zonNameRe = regexp.MustCompile(`\.name\s*=\s*\.@?"?([A-Za-z_][A-Za-z0-9_]*)"?`)
+var zonNameRe = regexp.MustCompile(`\.name\s*=\s*\.(?:@"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*))`)
 
 func packageJSONName(file string) string {
 	b, err := os.ReadFile(file)
@@ -114,6 +126,10 @@ func packageJSONName(file string) string {
 	}
 	if json.Unmarshal(b, &pkg) != nil {
 		return ""
+	}
+	// A scoped name ("@me/tool") is not a valid project name; its last part is.
+	if i := strings.LastIndex(pkg.Name, "/"); i >= 0 {
+		return pkg.Name[i+1:]
 	}
 	return pkg.Name
 }

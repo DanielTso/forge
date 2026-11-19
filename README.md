@@ -112,7 +112,7 @@ manifest (or `cmd/<name>`), then falls back to the directory name (`--name` over
 | Component | Adds |
 | --- | --- |
 | `ci` | GitHub Actions workflow for the language |
-| `dockerfile` | multi-stage / slim `Dockerfile` + `.dockerignore` (not for libraries) |
+| `dockerfile` | multi-stage / slim `Dockerfile` + `.dockerignore` (not for `go-lib`, `gleam`, `zig` or `generic`) |
 | `license` | `LICENSE` (`--license`, `--author`) |
 | `gitignore`, `editorconfig` | language-aware `.gitignore`, `.editorconfig` |
 | `changelog`, `contributing` | `CHANGELOG.md`, `CONTRIBUTING.md` |
