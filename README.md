@@ -8,6 +8,8 @@
 `.editorconfig`, CHANGELOG, CONTRIBUTING, `docs/`, CI workflows, a Makefile and starter code with tests —
 so every project starts from the same solid baseline. Go, Python, Node and Rust.
 
+**📖 [Read the wiki](https://github.com/DanielTso/forge/wiki)**: [Quick Start](https://github.com/DanielTso/forge/wiki/Quick-Start) · [Project Types](https://github.com/DanielTso/forge/wiki/Project-Types) · [Using forge with AI](https://github.com/DanielTso/forge/wiki/Using-forge-with-AI) · [Troubleshooting](https://github.com/DanielTso/forge/wiki/Troubleshooting-and-FAQ)
+
 ## Quick look
 
 ```console
