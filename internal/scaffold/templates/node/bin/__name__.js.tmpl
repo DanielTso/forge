@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import { greet } from "../src/index.js";
+
+const args = process.argv.slice(2);
+
+if (args.includes("--help") || args.includes("-h")) {
+  console.log("Usage: <% .Name %> [name]");
+} else {
+  console.log(greet(args[0]));
+}

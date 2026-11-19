@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1
+FROM node:24-slim
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --omit=dev
+COPY bin ./bin
+COPY src ./src
+USER node
+ENTRYPOINT ["node", "bin/<% .Name %>.js"]

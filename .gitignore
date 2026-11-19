@@ -1,0 +1,9 @@
+/bin/
+/dist/
+*.test
+*.out
+coverage.txt
+*:Zone.Identifier
+.idea/
+.vscode/
+.DS_Store

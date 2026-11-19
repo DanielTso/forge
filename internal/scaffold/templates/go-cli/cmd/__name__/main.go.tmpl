@@ -1,0 +1,23 @@
+// Command <% .Name %> <% .Description %>
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"<% .Module %>/internal/app"
+)
+
+// Set at build time via -ldflags (see Makefile).
+var (
+	version = "dev"
+	commit  = "none"
+)
+
+func main() {
+	a := app.New(os.Stdout, os.Stderr, app.BuildInfo{Version: version, Commit: commit})
+	if err := a.Run(os.Args[1:]); err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
+		os.Exit(1)
+	}
+}

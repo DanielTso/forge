@@ -1,0 +1,17 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `cmd/<% .Name %>/` | `main` package: wiring only (flags, build info, exit codes) |
+| `internal/app/` | Application logic; unit-testable, not importable by other modules |
+| `docs/` | Documentation and ADRs |
+| `Makefile` | Common developer tasks (`make help`) |
+| `.github/workflows/` | CI: vet, test, lint |
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

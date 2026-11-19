@@ -1,0 +1,51 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+.idea/
+.vscode/
+*.swp
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+<% if .IsGo %>
+# Go
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+coverage.txt
+vendor/
+go.work
+go.work.sum
+<% end -%>
+<% if .IsPython %>
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+<% end -%>
+<% if .IsNode %>
+# Node
+node_modules/
+dist/
+coverage/
+*.log
+.npm/
+<% end -%>
+<% if .IsRust %>
+# Rust
+/target/
+<% end -%>

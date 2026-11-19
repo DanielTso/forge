@@ -1,0 +1,8 @@
+"""<% .Description %>"""
+
+__version__ = "0.1.0"
+
+
+def greet(name: str = "") -> str:
+    """Return a greeting for ``name`` (or for the world if empty)."""
+    return f"Hello, {name or 'world'}!"

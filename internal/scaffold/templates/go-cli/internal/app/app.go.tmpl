@@ -1,0 +1,44 @@
+// Package app contains the application logic for <% .Name %>, kept separate
+// from main so it can be unit tested.
+package app
+
+import (
+	"flag"
+	"fmt"
+	"io"
+)
+
+// BuildInfo describes the running binary.
+type BuildInfo struct {
+	Version string
+	Commit  string
+}
+
+// App is the command-line application.
+type App struct {
+	out, errOut io.Writer
+	info        BuildInfo
+}
+
+// New returns an App writing to out and errOut.
+func New(out, errOut io.Writer, info BuildInfo) *App {
+	return &App{out: out, errOut: errOut, info: info}
+}
+
+// Run executes the application with the given arguments (excluding the program name).
+func (a *App) Run(args []string) error {
+	fs := flag.NewFlagSet("<% .Name %>", flag.ContinueOnError)
+	fs.SetOutput(a.errOut)
+	showVersion := fs.Bool("version", false, "print version and exit")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+
+	if *showVersion {
+		_, err := fmt.Fprintf(a.out, "<% .Name %> %s (%s)\n", a.info.Version, a.info.Commit)
+		return err
+	}
+
+	_, err := fmt.Fprintln(a.out, "Hello from <% .Name %>!")
+	return err
+}

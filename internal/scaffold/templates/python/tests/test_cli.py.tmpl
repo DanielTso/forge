@@ -1,0 +1,26 @@
+import pytest
+
+from <% .Snake %> import greet
+from <% .Snake %>.cli import main
+
+
+def test_greet() -> None:
+    assert greet("Gopher") == "Hello, Gopher!"
+    assert greet() == "Hello, world!"
+
+
+def test_main_default(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main([]) == 0
+    assert capsys.readouterr().out == "Hello, world!\n"
+
+
+def test_main_with_name(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["Ada"]) == 0
+    assert capsys.readouterr().out == "Hello, Ada!\n"
+
+
+def test_version(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as exc:
+        main(["--version"])
+    assert exc.value.code == 0
+    assert "<% .Name %> 0.1.0" in capsys.readouterr().out

@@ -1,0 +1,13 @@
+/**
+ * <% .Description %>
+ * @module <% .NpmName %>
+ */
+
+/**
+ * Return a greeting for `name` (or for the world if omitted).
+ * @param {string} [name]
+ * @returns {string}
+ */
+export function greet(name = "") {
+  return `Hello, ${name || "world"}!`;
+}

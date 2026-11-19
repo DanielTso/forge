@@ -1,0 +1,25 @@
+use std::process::Command;
+
+fn run(args: &[&str]) -> String {
+    let out = Command::new(env!("CARGO_BIN_EXE_<% .Name %>"))
+        .args(args)
+        .output()
+        .expect("failed to run binary");
+    assert!(out.status.success());
+    String::from_utf8(out.stdout).unwrap()
+}
+
+#[test]
+fn greets_the_world_by_default() {
+    assert_eq!(run(&[]), "Hello, world!\n");
+}
+
+#[test]
+fn greets_a_name() {
+    assert_eq!(run(&["Ada"]), "Hello, Ada!\n");
+}
+
+#[test]
+fn prints_version() {
+    assert_eq!(run(&["--version"]), "<% .Name %> 0.1.0\n");
+}

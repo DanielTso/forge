@@ -1,0 +1,48 @@
+# <% .Name %>
+
+<% .Description %>
+
+## Getting started
+
+<% if .IsGo -%>
+```sh
+make build   # compile
+make test    # run tests
+make lint    # run linters (requires golangci-lint)
+```
+<% else if .IsPython -%>
+```sh
+make install   # create .venv and install the package with dev tools
+make test      # run pytest
+make check     # lint (ruff), type-check (mypy), test
+make run       # run the CLI
+```
+<% else if .IsNode -%>
+```sh
+make install   # npm install
+make test      # node --test
+make lint      # eslint
+make run       # run the CLI
+```
+<% else if .IsRust -%>
+```sh
+make build   # cargo build
+make test    # cargo test
+make check   # fmt, clippy, test
+make run     # cargo run
+```
+<% else -%>
+TODO: installation and usage instructions.
+<% end %>
+## Project layout
+
+See [docs/architecture.md](docs/architecture.md) for an overview of how the project is organised.
+
+## Contributing
+
+Contributions are welcome — please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+<% if ne .License "none" %>
+## License
+
+Released under the <% .License %> license. See [LICENSE](LICENSE).
+<% end -%>

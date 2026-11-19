@@ -1,0 +1,22 @@
+//! <% .Description %>
+
+/// Return a greeting for `name` (or for the world if it is empty).
+pub fn greet(name: &str) -> String {
+    let name = if name.is_empty() { "world" } else { name };
+    format!("Hello, {name}!")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn greets_by_name() {
+        assert_eq!(greet("Ferris"), "Hello, Ferris!");
+    }
+
+    #[test]
+    fn greets_the_world_when_empty() {
+        assert_eq!(greet(""), "Hello, world!");
+    }
+}

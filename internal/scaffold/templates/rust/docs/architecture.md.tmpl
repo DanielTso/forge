@@ -1,0 +1,17 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/lib.rs` | Library crate: all logic lives here so it is easy to test |
+| `src/main.rs` | Thin binary: argument handling and output |
+| `tests/` | Integration tests that run the compiled binary |
+| `rustfmt.toml` | Formatting config |
+| `docs/` | Documentation and ADRs |
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

@@ -1,0 +1,12 @@
+use std::env;
+
+use <% .Snake %>::greet;
+
+fn main() {
+    let arg = env::args().nth(1).unwrap_or_default();
+    if arg == "--version" {
+        println!("<% .Name %> {}", env!("CARGO_PKG_VERSION"));
+    } else {
+        println!("{}", greet(&arg));
+    }
+}

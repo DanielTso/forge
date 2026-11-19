@@ -1,0 +1,17 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/<% .Snake %>/` | The package (src layout keeps tests honest: they import the installed code) |
+| `src/<% .Snake %>/cli.py` | Command-line entry point (`<% .Name %>` script and `python -m <% .Snake %>`) |
+| `tests/` | pytest suite |
+| `pyproject.toml` | Packaging, dependencies and tool config (ruff, mypy, pytest) |
+| `docs/` | Documentation and ADRs |
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

@@ -1,0 +1,11 @@
+[package]
+name = "<% .Name %>"
+version = "0.1.0"
+edition = "2024"
+description = "<% .Description %>"
+authors = ["<% .Author %>"]
+<% if ne .License "none" -%>
+license = "<% .License %>"
+<% end -%>
+
+[dependencies]

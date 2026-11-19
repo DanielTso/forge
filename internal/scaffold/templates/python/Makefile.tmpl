@@ -1,0 +1,44 @@
+VENV := .venv
+PY   := $(VENV)/bin/python
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+$(PY):
+	python3 -m venv $(VENV)
+
+.PHONY: install
+install: $(PY) ## Create .venv and install the package with dev tools
+	$(PY) -m pip install -e ".[dev]"
+
+.PHONY: run
+run: ## Run the CLI
+	$(PY) -m <% .Snake %>
+
+.PHONY: test
+test: ## Run tests
+	$(PY) -m pytest
+
+.PHONY: fmt
+fmt: ## Format and auto-fix lint issues
+	$(PY) -m ruff format .
+	$(PY) -m ruff check --fix .
+
+.PHONY: lint
+lint: ## Lint and check formatting
+	$(PY) -m ruff check .
+	$(PY) -m ruff format --check .
+
+.PHONY: typecheck
+typecheck: ## Type-check with mypy
+	$(PY) -m mypy
+
+.PHONY: check
+check: lint typecheck test ## Lint, type-check and test
+
+.PHONY: clean
+clean: ## Remove build artifacts and caches
+	rm -rf build dist *.egg-info .pytest_cache .mypy_cache .ruff_cache

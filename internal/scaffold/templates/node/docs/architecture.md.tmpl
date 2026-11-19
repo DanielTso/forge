@@ -1,0 +1,17 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/index.js` | Public API (ES module) |
+| `bin/<% .Name %>.js` | Command-line entry point |
+| `test/` | Tests using the built-in `node:test` runner (no extra dependencies) |
+| `eslint.config.js` | ESLint flat config |
+| `docs/` | Documentation and ADRs |
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

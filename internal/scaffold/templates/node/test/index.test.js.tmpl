@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { test } from "node:test";
+import { fileURLToPath } from "node:url";
+
+import { greet } from "../src/index.js";
+
+const bin = fileURLToPath(new URL("../bin/<% .Name %>.js", import.meta.url));
+
+test("greet", () => {
+  assert.equal(greet("Gopher"), "Hello, Gopher!");
+  assert.equal(greet(), "Hello, world!");
+});
+
+test("cli greets the world by default", () => {
+  assert.equal(execFileSync(process.execPath, [bin], { encoding: "utf8" }), "Hello, world!\n");
+});
+
+test("cli greets a name", () => {
+  assert.equal(execFileSync(process.execPath, [bin, "Ada"], { encoding: "utf8" }), "Hello, Ada!\n");
+});

@@ -1,0 +1,22 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `cmd/<% .Name %>/` | `main` package: config, logging, graceful shutdown |
+| `internal/server/` | HTTP handlers and routing (`GET /healthz` included) |
+| `Dockerfile` | Multi-stage build producing a small non-root image |
+| `docs/` | Documentation and ADRs |
+
+## Configuration
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `ADDR` | `:8080` | Listen address |
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

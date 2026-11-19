@@ -1,0 +1,32 @@
+// Package server holds the HTTP handlers for <% .Name %>.
+package server
+
+import (
+	"encoding/json"
+	"log/slog"
+	"net/http"
+)
+
+// Server wires dependencies into HTTP handlers.
+type Server struct {
+	log *slog.Logger
+}
+
+// New returns a Server.
+func New(log *slog.Logger) *Server {
+	return &Server{log: log}
+}
+
+// Handler returns the root HTTP handler with all routes registered.
+func (s *Server) Handler() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /healthz", s.handleHealth)
+	return mux
+}
+
+func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(map[string]string{"status": "ok"}); err != nil {
+		s.log.Error("write health response", "err", err)
+	}
+}

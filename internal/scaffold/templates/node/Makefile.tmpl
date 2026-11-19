@@ -1,0 +1,28 @@
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: install
+install: ## Install dependencies
+	npm install
+
+.PHONY: run
+run: ## Run the CLI
+	npm start --silent
+
+.PHONY: test
+test: ## Run tests
+	npm test
+
+.PHONY: lint
+lint: ## Lint with ESLint
+	npm run lint
+
+.PHONY: check
+check: lint test ## Lint and test
+
+.PHONY: clean
+clean: ## Remove installed dependencies and coverage
+	rm -rf node_modules coverage

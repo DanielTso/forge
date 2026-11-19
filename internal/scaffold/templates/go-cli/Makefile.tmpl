@@ -1,0 +1,41 @@
+BINARY  := <% .Name %>
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
+LDFLAGS := -s -w -X main.version=$(VERSION) -X main.commit=$(COMMIT)
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: build
+build: ## Build the binary into ./bin
+	go build -ldflags "$(LDFLAGS)" -o bin/$(BINARY) ./cmd/$(BINARY)
+
+.PHONY: run
+run: ## Run the program
+	go run ./cmd/$(BINARY)
+
+.PHONY: test
+test: ## Run tests with the race detector
+	go test -race -cover ./...
+
+.PHONY: fmt
+fmt: ## Format code
+	gofmt -s -w .
+
+.PHONY: vet
+vet: ## Run go vet
+	go vet ./...
+
+.PHONY: lint
+lint: ## Run golangci-lint
+	golangci-lint run
+
+.PHONY: check
+check: fmt vet test ## Format, vet and test
+
+.PHONY: clean
+clean: ## Remove build artifacts
+	rm -rf bin dist
