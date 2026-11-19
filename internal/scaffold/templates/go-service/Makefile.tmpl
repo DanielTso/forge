@@ -42,4 +42,4 @@ clean: ## Remove build artifacts
 
 .PHONY: docker
 docker: ## Build the container image
-	docker build -t $(BINARY):$(VERSION) .
+	docker build --build-arg VERSION=$(VERSION) --build-arg COMMIT=$(COMMIT) -t $(BINARY):$(VERSION) .

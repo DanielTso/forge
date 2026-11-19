@@ -4,7 +4,11 @@ WORKDIR /src
 COPY go.mod ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -ldflags "-s -w" -o /out/<% .Name %> ./cmd/<% .Name %>
+# Version info for binaries that define main.version / main.commit (ignored otherwise).
+ARG VERSION=dev
+ARG COMMIT=none
+RUN CGO_ENABLED=0 go build -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${COMMIT}" \
+    -o /out/<% .Name %> ./cmd/<% .Name %>
 
 FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=build /out/<% .Name %> /<% .Name %>

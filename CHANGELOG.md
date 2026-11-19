@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Go Dockerfile accepts `VERSION` / `COMMIT` build args and stamps them into the binary;
+  the go-service `make docker` target passes them.
+
+### Added
+
+- `make test-docker`: opt-in test that builds and runs every generated Dockerfile and checks
+  the image does not run as root.
+- Integration tests run ruff, mypy and pytest against generated Python projects.
+
 ## [0.1.0]
 
 ### Added

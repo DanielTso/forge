@@ -21,6 +21,10 @@ install: ## Install forge into $GOBIN / $GOPATH/bin
 test: ## Run all tests (including generated-project integration tests)
 	go test -race -cover ./...
 
+.PHONY: test-docker
+test-docker: ## Build and run every generated Dockerfile (needs Docker; pulls base images)
+	FORGE_DOCKER_TESTS=1 go test -count=1 -run Docker -v ./cmd
+
 .PHONY: test-short
 test-short: ## Run fast tests only
 	go test -short ./...

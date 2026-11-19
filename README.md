@@ -113,5 +113,6 @@ Templates live in `internal/scaffold/templates/<set>/`, embedded into the binary
 - To add a component for `forge add`, register it in `internal/scaffold/components.go`
   (either file patterns matched against a rendered project, or an extras set).
 
-`make test` also generates real projects and runs their toolchains (`go`, `node`, `python3`, `cargo`);
-a language whose tools are not installed is skipped.
+`make test` also generates real projects and runs their toolchains — `go` + `golangci-lint`, `node`,
+`ruff` / `mypy` / `pytest`, `cargo fmt` / `clippy` / `test` — skipping any tool that is not installed.
+`make test-docker` builds and runs every generated Dockerfile (needs Docker; opt-in because it pulls images).
