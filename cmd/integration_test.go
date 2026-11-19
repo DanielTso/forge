@@ -21,7 +21,7 @@ func TestGeneratedGoProjectsBuildAndPass(t *testing.T) {
 	for _, typ := range []string{"go-cli", "go-service", "go-lib"} {
 		t.Run(typ, func(t *testing.T) {
 			parent := t.TempDir()
-			if out, err := run(t, "new", "sample-app", "-t", typ, "-o", parent, "--no-git", "-m", "example.com/sample-app"); err != nil {
+			if out, err := run(t, "new", "sample-app", "-t", typ, "-o", parent, "--no-git", "-m", "sample-app"); err != nil {
 				t.Fatalf("%v\n%s", err, out)
 			}
 			proj := filepath.Join(parent, "sample-app")
@@ -35,6 +35,17 @@ func TestGeneratedGoProjectsBuildAndPass(t *testing.T) {
 				if out, err := c.CombinedOutput(); err != nil {
 					t.Fatalf("go %v failed: %v\n%s", args, err, out)
 				}
+			}
+
+			// The generated CI runs golangci-lint, so the generated code must pass it.
+			if lint, err := exec.LookPath("golangci-lint"); err == nil {
+				c := exec.Command(lint, "run", "./...")
+				c.Dir = proj
+				if out, err := c.CombinedOutput(); err != nil {
+					t.Fatalf("golangci-lint failed on generated %s project: %v\n%s", typ, err, out)
+				}
+			} else {
+				t.Log("golangci-lint not installed; skipped lint check")
 			}
 		})
 	}

@@ -57,7 +57,7 @@ func tomlName(file, section string) string {
 	if err != nil {
 		return ""
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }() // read-only: nothing to flush
 
 	in := false
 	sc := bufio.NewScanner(f)
@@ -119,7 +119,7 @@ func readGoMod(file string) (module, goVersion string, err error) {
 		}
 		return "", "", err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }() // read-only: nothing to flush
 
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {

@@ -29,19 +29,19 @@ var projectTypes = []ProjectType{
 	{
 		ID: "go-cli", Lang: "go",
 		Description: "Go command-line application (cmd/, internal/, Makefile, CI)",
-		Sets:        []string{"common", "go-cli"},
+		Sets:        []string{"common", "go-common", "go-cli"},
 		NextSteps:   []string{"make test", "make run"},
 	},
 	{
 		ID: "go-service", Lang: "go",
 		Description: "Go HTTP service with health check, graceful shutdown, Dockerfile",
-		Sets:        []string{"common", "extras/dockerfile/go", "go-service"},
+		Sets:        []string{"common", "go-common", "extras/dockerfile/go", "go-service"},
 		NextSteps:   []string{"make test", "make run"},
 	},
 	{
 		ID: "go-lib", Lang: "go",
 		Description: "Go library with examples and CI",
-		Sets:        []string{"common", "go-lib"},
+		Sets:        []string{"common", "go-common", "go-lib"},
 		NextSteps:   []string{"make test"},
 	},
 	{

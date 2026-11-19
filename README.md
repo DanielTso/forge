@@ -7,8 +7,12 @@ so every project starts from the same solid baseline.
 ## Install
 
 ```sh
-make install          # or: go install github.com/DanielTso/forge@latest
+go install github.com/DanielTso/forge@latest   # once the repo is published
+make install                                    # from a checkout (embeds version info)
 ```
+
+Tagged releases (`vX.Y.Z`) publish Linux/macOS/Windows archives (amd64 + arm64) via GoReleaser;
+`make snapshot` builds them locally without publishing.
 
 ## Usage
 
@@ -92,7 +96,7 @@ All types include: `README.md`, `LICENSE`, `CHANGELOG.md`, `CONTRIBUTING.md`, `.
 ## Development
 
 ```sh
-make check    # fmt, vet, test
+make check    # fmt, vet, lint (golangci-lint), test
 make build
 ```
 

@@ -33,8 +33,16 @@ fmt: ## Format code
 vet: ## Run go vet
 	go vet ./...
 
+.PHONY: lint
+lint: ## Run golangci-lint
+	golangci-lint run ./...
+
+.PHONY: snapshot
+snapshot: ## Build release archives locally with goreleaser (nothing is published)
+	goreleaser release --snapshot --clean --skip=publish
+
 .PHONY: check
-check: fmt vet test ## Format, vet and test
+check: fmt vet lint test ## Format, vet, lint and test
 
 .PHONY: clean
 clean: ## Remove build artifacts
