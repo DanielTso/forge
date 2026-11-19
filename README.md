@@ -1,18 +1,61 @@
 # forge
 
+[![CI](https://github.com/DanielTso/forge/actions/workflows/ci.yml/badge.svg)](https://github.com/DanielTso/forge/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/DanielTso/forge)](https://github.com/DanielTso/forge/releases/latest)
+[![Go Reference](https://pkg.go.dev/badge/github.com/DanielTso/forge.svg)](https://pkg.go.dev/github.com/DanielTso/forge)
+
 `forge` scaffolds new projects using industry-standard structure — README, LICENSE, `.gitignore`,
 `.editorconfig`, CHANGELOG, CONTRIBUTING, `docs/`, CI workflows, a Makefile and starter code with tests —
-so every project starts from the same solid baseline.
+so every project starts from the same solid baseline. Go, Python, Node and Rust.
+
+## Quick look
+
+```console
+$ forge new todo-app -m github.com/you/todo-app
+Created go-cli project "todo-app" in ./todo-app
+  ...
+Initialized a git repository (branch: main).
+
+$ cd todo-app && tree
+.
+├── .github/              # CI workflow, issue + PR templates
+├── cmd/todo-app/main.go  # entry point
+├── docs/                 # README + architecture notes
+├── internal/app/         # your code, with a passing test
+├── .editorconfig  .gitignore  .golangci.yml
+├── CHANGELOG.md  CONTRIBUTING.md  LICENSE  README.md
+├── Makefile              # make help | test | run | lint | check
+└── go.mod
+
+$ make test
+ok  	github.com/you/todo-app/internal/app	coverage: 100.0% of statements
+
+$ forge add dockerfile    # add pieces later; never overwrites existing files
+Added dockerfile to this go-cli project:
+  .dockerignore
+  Dockerfile
+```
+
+Every generated project is tested in CI with its own toolchain (golangci-lint; ruff, mypy, pytest;
+`node --test`; cargo fmt, clippy, test), and every generated Dockerfile is built and run.
 
 ## Install
 
 ```sh
-go install github.com/DanielTso/forge@latest   # once the repo is published
-make install                                    # from a checkout (embeds version info)
+go install github.com/DanielTso/forge@latest
 ```
 
-Tagged releases (`vX.Y.Z`) publish Linux/macOS/Windows archives (amd64 + arm64) via GoReleaser;
-`make snapshot` builds them locally without publishing.
+No Go toolchain? Download a prebuilt binary for Linux, macOS or Windows (amd64 / arm64) from the
+[latest release](https://github.com/DanielTso/forge/releases/latest), unpack it, and put `forge` on your `PATH`.
+Each release includes `checksums.txt` for verification.
+
+### Shell completion
+
+```sh
+forge completion bash > ~/.local/share/bash-completion/completions/forge   # bash
+forge completion zsh  > "${fpath[1]}/_forge"                               # zsh
+forge completion fish > ~/.config/fish/completions/forge.fish              # fish
+```
 
 ## Usage
 
@@ -98,7 +141,12 @@ All types include: `README.md`, `LICENSE`, `CHANGELOG.md`, `CONTRIBUTING.md`, `.
 ```sh
 make check    # fmt, vet, lint (golangci-lint), test
 make build
+make install  # from a checkout (embeds version info)
+make snapshot # build release archives locally with GoReleaser; nothing is published
 ```
+
+Releases: add the changes to `CHANGELOG.md`, then push a `vX.Y.Z` tag. The Release workflow builds
+and publishes archives for 6 OS/arch targets.
 
 Templates live in `internal/scaffold/templates/<set>/`, embedded into the binary with `go:embed`.
 
