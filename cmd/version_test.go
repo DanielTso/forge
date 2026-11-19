@@ -26,6 +26,13 @@ func TestFromBuildInfo(t *testing.T) {
 			wantV: "dev", wantC: "abc1234",
 		},
 		{
+			name: "local build with uncommitted changes is marked dirty",
+			v:    "dev", c: "none",
+			info: debug.BuildInfo{Main: debug.Module{Version: "(devel)"},
+				Settings: []debug.BuildSetting{{Key: "vcs.revision", Value: "abc1234def5678"}, {Key: "vcs.modified", Value: "true"}}},
+			wantV: "dev", wantC: "abc1234-dirty",
+		},
+		{
 			name: "ldflags values win",
 			v:    "1.2.3", c: "f00baa1",
 			info: debug.BuildInfo{Main: debug.Module{Version: "v9.9.9"},

@@ -40,6 +40,9 @@ func versionString() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		v, c = fromBuildInfo(v, c, info)
 	}
+	if c == "none" {
+		return v
+	}
 	return v + " (" + c + ")"
 }
 
@@ -48,9 +51,21 @@ func fromBuildInfo(v, c string, info *debug.BuildInfo) (string, string) {
 		v = info.Main.Version
 	}
 	if c == "none" {
+		rev, dirty := "", false
 		for _, s := range info.Settings {
-			if s.Key == "vcs.revision" && len(s.Value) >= 7 {
-				c = s.Value[:7]
+			switch s.Key {
+			case "vcs.revision":
+				if len(s.Value) >= 7 {
+					rev = s.Value[:7]
+				}
+			case "vcs.modified":
+				dirty = s.Value == "true"
+			}
+		}
+		if rev != "" {
+			c = rev
+			if dirty {
+				c += "-dirty"
 			}
 		}
 	}

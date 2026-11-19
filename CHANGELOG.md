@@ -6,25 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.1]
+### Changed
+
+- `forge --version` omits the commit when it is unknown (e.g. `go install` builds now print
+  `forge v0.1.1` instead of `forge v0.1.1 (none)`), and marks local builds with uncommitted
+  changes as `-dirty`.
+
+## [0.1.1] - 2026-11-18
 
 ### Fixed
 
 - `forge --version` showed `dev (none)` when installed with `go install`; it now reports the
-  module version (and the commit for local builds) from Go's embedded build info.
+  module version from Go's embedded build info (and the commit, for local builds).
 
-### Changed
-
-- Go Dockerfile accepts `VERSION` / `COMMIT` build args and stamps them into the binary;
-  the go-service `make docker` target passes them.
-
-### Added
-
-- `make test-docker`: opt-in test that builds and runs every generated Dockerfile and checks
-  the image does not run as root.
-- Integration tests run ruff, mypy and pytest against generated Python projects.
-
-## [0.1.0]
+## [0.1.0] - 2026-11-18
 
 ### Added
 
@@ -34,3 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   contributing, github, docs, makefile, lint.
 - Interactive prompts for a bare `forge new` / `forge init`.
 - MIT, Apache-2.0 and BSD-3-Clause licenses.
+- Go Dockerfile accepts `VERSION` / `COMMIT` build args and stamps them into the binary;
+  the go-service `make docker` target passes them.
+- `make test-docker`: opt-in test that builds and runs every generated Dockerfile and checks
+  the image does not run as root.
+- Integration tests run each generated project's own toolchain (golangci-lint; ruff, mypy and
+  pytest; node --test; cargo fmt, clippy and test).
+
+[Unreleased]: https://github.com/DanielTso/forge/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/DanielTso/forge/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/DanielTso/forge/releases/tag/v0.1.0
