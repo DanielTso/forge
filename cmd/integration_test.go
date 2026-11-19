@@ -87,15 +87,29 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 		}
 		dir := gen(t, "python")
 		sh(t, dir, "python3", "-m", "compileall", "-q", "src", "tests") // syntax check always
-		if exec.Command("python3", "-m", "pytest", "--version").Run() != nil {
-			t.Log("pytest not installed; ran syntax check only")
-			return
+
+		// Mirror the generated CI: ruff, mypy, pytest — each only if installed.
+		ran := 0
+		for _, step := range [][]string{
+			{"ruff", "check", "."},
+			{"ruff", "format", "--check", "."},
+			{"mypy"},
+			{"pytest", "-q"},
+		} {
+			if _, err := exec.LookPath(step[0]); err != nil {
+				t.Logf("%s not installed; skipped", step[0])
+				continue
+			}
+			c := exec.Command(step[0], step[1:]...)
+			c.Dir = dir
+			c.Env = append(os.Environ(), "PYTHONPATH="+filepath.Join(dir, "src"))
+			if out, err := c.CombinedOutput(); err != nil {
+				t.Fatalf("%v failed: %v\n%s", step, err, out)
+			}
+			ran++
 		}
-		c := exec.Command("python3", "-m", "pytest", "-q")
-		c.Dir = dir
-		c.Env = append(os.Environ(), "PYTHONPATH="+filepath.Join(dir, "src"))
-		if out, err := c.CombinedOutput(); err != nil {
-			t.Fatalf("pytest failed: %v\n%s", err, out)
+		if ran == 0 {
+			t.Log("no Python tools installed; ran syntax check only")
 		}
 	})
 	t.Run("rust", func(t *testing.T) {
