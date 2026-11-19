@@ -86,7 +86,7 @@ func PlanUpgrade(dir string) (UpgradePlan, error) {
 	}
 	for _, e := range entries {
 		name := e.Name()
-		if e.IsDir() || !(strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml")) {
+		if e.IsDir() || (!strings.HasSuffix(name, ".yml") && !strings.HasSuffix(name, ".yaml")) {
 			continue
 		}
 		plan.Workflows++
