@@ -125,7 +125,7 @@ footer { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--lin
 <div class="wrap">
 
 <header>
-  <span class="eyebrow">forge v0.1.1 · field guide</span>
+  <span class="eyebrow">forge v0.4.0 · field guide</span>
   <h1>Start every project with the right bones</h1>
   <p class="lede">forge is a command you type once at the start of a project. In about a second it builds the folder structure, tests, docs, license and automatic checks that professional teams use, so you (and your AI assistant) build on a solid base instead of a pile of loose files.</p>
   <div class="facts">
@@ -149,12 +149,13 @@ footer { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--lin
     <div class="term-bar"><span>terminal</span><button class="copy" data-copy="go install github.com/DanielTso/forge@latest" type="button">Copy</button></div>
 <pre><span class="p">$ </span><span class="c">go install github.com/DanielTso/forge@latest</span>
 <span class="p">$ </span><span class="c">forge --version</span>
-<span class="d">forge v0.1.1 (none)</span>
+<span class="d">forge v0.4.0</span>
 <span class="p">$ </span><span class="c">forge list</span>
 <span class="d">TYPE        DESCRIPTION
 go-cli      Go command-line application …</span></pre>
   </div>
   <p class="note">If <code>forge</code> isn't found after installing, open a new terminal so it picks up Go's install folder (<code>~/go/bin</code>).</p>
+  <p class="note">On a Mac (or Linux) with Homebrew: <code>brew tap DanielTso/forge https://github.com/DanielTso/forge</code> then <code>brew install --cask DanielTso/forge/forge</code>.</p>
   <p class="note">No Go? Download a ready-made file for Windows, Mac or Linux from the <a href="https://github.com/DanielTso/forge/releases/latest">latest release page</a>, unzip it, and run it.</p>
 </section>
 
@@ -289,6 +290,7 @@ Hello from todo-app!</pre></div>
   <span class="eyebrow">Explore</span>
   <h2>What each project type looks like</h2>
   <p>Every type shares the same base (README, LICENSE, docs, CI, issue templates). The difference is where the code lives and which tools check it.</p>
+  <p class="note">There are 13 types in all. Five are shown below; the others are <code>go-lib</code>, <code>typescript</code>, <code>deno</code>, <code>bun</code>, <code>java</code>, <code>gleam</code>, <code>zig</code> and <code>generic</code>. Run <code>forge list</code> to see them all, or read the <a href="https://github.com/DanielTso/forge/wiki/Project-Types">Project Types</a> wiki page.</p>
   <div class="tabs" role="tablist" aria-label="Project type">
     <button class="tab" role="tab" id="tab-go-cli" aria-selected="true" data-type="go-cli" type="button">go-cli</button>
     <button class="tab" role="tab" id="tab-go-service" aria-selected="false" data-type="go-service" type="button">go-service</button>
@@ -333,6 +335,7 @@ Hello from todo-app!</pre></div>
       <tr><td><code>forge init</code></td><td>Same as <code>new</code>, but fills the folder you're already in</td></tr>
       <tr><td><code>forge add</code></td><td>Lists pieces you can add to an existing project</td></tr>
       <tr><td><code>forge add ci license</code></td><td>Adds those pieces, matched to the project's language</td></tr>
+      <tr><td><code>forge upgrade --dry-run</code></td><td>Shows which GitHub Actions versions in an existing project are out of date; drop <code>--dry-run</code> to update them</td></tr>
       <tr><td><code>forge list</code></td><td>Shows project types and licenses</td></tr>
       <tr><td><code>make help</code></td><td>Inside a project: lists its shortcuts (test, run, lint …)</td></tr>
       <tr><td><code>make check</code></td><td>Inside a project: format, lint and test in one go</td></tr>
@@ -351,7 +354,7 @@ Hello from todo-app!</pre></div>
 </section>
 
 <footer>
-  forge v0.1.1 · source and downloads at <a href="https://github.com/DanielTso/forge">github.com/DanielTso/forge</a> · all terminal output on this page was recorded from real runs on 18 Nov 2026.
+  forge v0.4.0 · source and downloads at <a href="https://github.com/DanielTso/forge">github.com/DanielTso/forge</a> · all terminal output on this page was recorded from real runs on 18 Nov 2026.
 </footer>
 </div>
 
