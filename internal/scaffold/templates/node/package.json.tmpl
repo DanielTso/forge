@@ -20,9 +20,9 @@
   "engines": {
     "node": ">=20"
   },
-<% if ne .License "none" -%>
+<%- if ne .License "none" %>
   "license": "<% .License %>",
-<% end -%>
+<%- end %>
   "author": "<% .Author %>",
   "devDependencies": {
     "@eslint/js": "^9.0.0",

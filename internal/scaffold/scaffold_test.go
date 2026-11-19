@@ -1,6 +1,7 @@
 package scaffold
 
 import (
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -103,6 +104,56 @@ func TestGitignoreIgnoresWindowsZoneIdentifierFiles(t *testing.T) {
 	files, _ := Render(newOpts(t, "generic"))
 	if !strings.Contains(string(paths(files)[".gitignore"].Content), "*:Zone.Identifier") {
 		t.Error(".gitignore should ignore *:Zone.Identifier")
+	}
+}
+
+func TestDependabotMatchesLanguage(t *testing.T) {
+	want := map[string]string{
+		"go-cli": "gomod", "go-service": "gomod", "go-lib": "gomod",
+		"python": "pip", "node": "npm", "rust": "cargo", "generic": "",
+	}
+	ecosystems := []string{"gomod", "pip", "npm", "cargo"}
+	for typ, eco := range want {
+		files, err := Render(newOpts(t, typ))
+		if err != nil {
+			t.Fatal(err)
+		}
+		cfg := string(paths(files)[".github/dependabot.yml"].Content)
+		// Indentation is structure in YAML: each update entry must be a 2-space list item.
+		if !strings.Contains(cfg, "\nupdates:\n  - package-ecosystem: ") ||
+			!strings.Contains(cfg, "\n  - package-ecosystem: github-actions\n    directory: /\n") {
+			t.Errorf("%s: dependabot.yml is mis-indented:\n%s", typ, cfg)
+		}
+		if !strings.Contains(cfg, "package-ecosystem: github-actions") {
+			t.Errorf("%s: dependabot.yml should always update github-actions", typ)
+		}
+		for _, e := range ecosystems {
+			has := strings.Contains(cfg, "package-ecosystem: "+e+"\n")
+			if has != (e == eco) {
+				t.Errorf("%s: ecosystem %s present=%v, want %v\n%s", typ, e, has, e == eco, cfg)
+			}
+		}
+	}
+}
+
+func TestPackageJSONIsValidAndIndented(t *testing.T) {
+	for _, lic := range []string{"MIT", "none"} {
+		o := newOpts(t, "node")
+		o.License = lic
+		files, _ := Render(o)
+		raw := paths(files)["package.json"].Content
+		var pkg map[string]any
+		if err := json.Unmarshal(raw, &pkg); err != nil {
+			t.Fatalf("license %s: invalid JSON: %v\n%s", lic, err, raw)
+		}
+		if _, has := pkg["license"]; has != (lic != "none") {
+			t.Errorf("license %s: license field present=%v", lic, has)
+		}
+		for _, line := range strings.Split(string(raw), "\n") {
+			if strings.HasPrefix(line, "\"") {
+				t.Errorf("license %s: top-level key not indented: %q", lic, line)
+			}
+		}
 	}
 }
 

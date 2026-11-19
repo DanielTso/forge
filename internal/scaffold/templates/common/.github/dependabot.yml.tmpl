@@ -1,0 +1,29 @@
+# Keeps dependencies and CI actions up to date with weekly pull requests.
+# https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+updates:
+<%- if .IsGo %>
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+<%- else if .IsPython %>
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+<%- else if .IsNode %>
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+<%- else if .IsRust %>
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+<%- end %>
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

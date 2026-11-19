@@ -115,6 +115,7 @@ manifest (or `cmd/<name>`), then falls back to the directory name (`--name` over
 | `gitignore`, `editorconfig` | language-aware `.gitignore`, `.editorconfig` |
 | `changelog`, `contributing` | `CHANGELOG.md`, `CONTRIBUTING.md` |
 | `github` | issue and PR templates |
+| `dependabot` | weekly dependency + GitHub Actions updates |
 | `docs` | `docs/` index and architecture page |
 | `makefile` | Makefile with `help/test/check/...` targets |
 | `lint` | `.golangci.yml`, `rustfmt.toml` or `eslint.config.js` |

@@ -28,6 +28,7 @@ var components = []Component{
 	{Name: "editorconfig", Description: ".editorconfig", Patterns: []string{".editorconfig"}},
 	{Name: "changelog", Description: "CHANGELOG.md (Keep a Changelog format)", Patterns: []string{"CHANGELOG.md"}},
 	{Name: "contributing", Description: "CONTRIBUTING.md", Patterns: []string{"CONTRIBUTING.md"}},
+	{Name: "dependabot", Description: "Dependabot config: weekly dependency and CI action updates", Patterns: []string{".github/dependabot.yml"}},
 	{Name: "github", Description: "GitHub issue and pull request templates", Patterns: []string{".github/ISSUE_TEMPLATE/*", ".github/pull_request_template.md"}},
 	{Name: "docs", Description: "docs/ index and architecture page", Patterns: []string{"docs/*"}},
 	{Name: "makefile", Description: "Makefile with standard developer tasks", Patterns: []string{"Makefile"}},

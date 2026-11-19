@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Generated projects include `.github/dependabot.yml` (language ecosystem + GitHub Actions,
+  weekly); `forge add dependabot` adds it to existing projects.
+
+### Changed
+
+- Generated CI workflows use current action versions: checkout v7, setup-go v7, setup-node v7,
+  setup-python v7, golangci-lint-action v9.
+
+### Fixed
+
+- Generated `package.json` had its `"license"` line mis-indented (template whitespace trimming).
+
 ## [0.1.2] - 2026-11-18
 
 ### Changed
