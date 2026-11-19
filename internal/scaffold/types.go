@@ -87,6 +87,18 @@ var projectTypes = []ProjectType{
 		NextSteps:   []string{"make test", "make run"},
 	},
 	{
+		ID: "bun", Lang: "bun",
+		Description: "Bun + TypeScript (bun:test, built-in type-check, single-binary build)",
+		Sets:        []string{"common", "bun"},
+		NextSteps:   []string{"make install", "make test", "make run"},
+	},
+	{
+		ID: "java", Lang: "java",
+		Description: "Java 25 with Maven (JUnit 6, runnable jar, CI)",
+		Sets:        []string{"common", "java"},
+		NextSteps:   []string{"make test", "make run"},
+	},
+	{
 		ID:          "generic",
 		Description: "Language-agnostic project: README, LICENSE, docs/, contributing guides",
 		Sets:        []string{"common"},

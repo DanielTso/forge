@@ -87,9 +87,15 @@ func TestRustRejectsDotsInName(t *testing.T) {
 }
 
 func TestLanguageSpecificGitignore(t *testing.T) {
+	// Each type ignores its own build output...
 	want := map[string]string{
 		"python": ".venv/", "node": "node_modules/", "rust": "/target/", "go-cli": "/bin/",
 		"typescript": "node_modules/", "deno": "/bin/", "gleam": "erl_crash.dump", "zig": ".zig-cache/",
+		"java": "*.class", "bun": "node_modules/",
+	}
+	// ...and these entries belong to one language only, so no other type may carry them.
+	exclusive := map[string]string{
+		"python": ".venv/", "rust": "/target/", "gleam": "erl_crash.dump", "zig": ".zig-cache/", "java": "*.class",
 	}
 	for typ, entry := range want {
 		files, _ := Render(newOpts(t, typ))
@@ -97,8 +103,8 @@ func TestLanguageSpecificGitignore(t *testing.T) {
 		if !strings.Contains(gi, entry) {
 			t.Errorf("%s .gitignore missing %q", typ, entry)
 		}
-		for other, otherEntry := range want {
-			if other != typ && otherEntry != entry && strings.Contains(gi, otherEntry) {
+		for other, otherEntry := range exclusive {
+			if other != typ && strings.Contains(gi, otherEntry) {
 				t.Errorf("%s .gitignore wrongly contains %s entry %q", typ, other, otherEntry)
 			}
 		}
@@ -118,8 +124,9 @@ func TestDependabotMatchesLanguage(t *testing.T) {
 		"go-cli": "gomod", "go-service": "gomod", "go-lib": "gomod",
 		"python": "pip", "node": "npm", "rust": "cargo", "generic": "",
 		"typescript": "npm", "deno": "", "gleam": "", "zig": "",
+		"java": "maven", "bun": "bun",
 	}
-	ecosystems := []string{"gomod", "pip", "npm", "cargo"}
+	ecosystems := []string{"gomod", "pip", "npm", "cargo", "maven", "bun"}
 	for typ, eco := range want {
 		files, err := Render(newOpts(t, typ))
 		if err != nil {
@@ -202,6 +209,29 @@ func TestGleamImportsSortedForAnyName(t *testing.T) {
 	}
 }
 
+func TestJavaPackage(t *testing.T) {
+	cases := []struct{ module, name, want string }{
+		{"github.com/DanielTso/my-java", "my-java", "io.github.danieltso.myjava"},
+		{"my-java", "my-java", "com.example.myjava"},
+		{"gitlab.com/x/y", "Cool.App", "com.example.coolapp"},
+		{"github.com/1user/app", "app", "io.github._1user.app"},
+	}
+	for _, c := range cases {
+		o := Options{Name: c.name, Module: c.module, Type: "java", Author: "A", Year: 2026}
+		if err := o.Normalize(); err != nil {
+			t.Fatal(err)
+		}
+		if got := o.JavaPackage(); got != c.want {
+			t.Errorf("JavaPackage(%q, %q) = %q, want %q", c.module, c.name, got, c.want)
+		}
+		files, _ := Render(o)
+		p := "src/main/java/" + strings.ReplaceAll(c.want, ".", "/") + "/App.java"
+		if f, ok := paths(files)[p]; !ok || !strings.HasPrefix(string(f.Content), "package "+c.want+";") {
+			t.Errorf("%s: App.java not at %s with matching package", c.want, p)
+		}
+	}
+}
+
 func TestShebangFilesAreExecutable(t *testing.T) {
 	files, _ := Render(newOpts(t, "node"))
 	if m := paths(files)["bin/my-proj.js"].Mode; m != 0o755 {
@@ -234,6 +264,8 @@ func TestRenderAllTypes(t *testing.T) {
 		"deno":       {"deno.json", "main.ts", "main_test.ts", "src/greet.ts", "src/greet_test.ts", "Makefile", ".github/workflows/ci.yml"},
 		"gleam":      {"gleam.toml", "src/my_proj.gleam", "test/my_proj_test.gleam", "Makefile", ".github/workflows/ci.yml"},
 		"zig":        {"build.zig", "build.zig.zon", "src/main.zig", "src/root.zig", "Makefile", ".github/workflows/ci.yml"},
+		"java":       {"pom.xml", "src/main/java/com/example/myproj/App.java", "src/test/java/com/example/myproj/AppTest.java", "Makefile", ".github/workflows/ci.yml"},
+		"bun":        {"package.json", "tsconfig.json", "src/index.ts", "src/cli.ts", "src/index.test.ts", "Makefile", ".github/workflows/ci.yml"},
 	}
 	for _, pt := range Types() {
 		t.Run(pt.ID, func(t *testing.T) {

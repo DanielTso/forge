@@ -147,6 +147,21 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 		sh(t, dir, "zig", "fmt", "--check", ".")
 		sh(t, dir, "zig", "build", "test") // also checks the build.zig.zon fingerprint
 	})
+	t.Run("java", func(t *testing.T) {
+		if _, err := exec.LookPath("mvn"); err != nil {
+			missingTool(t, "maven (mvn) not installed")
+		}
+		sh(t, gen(t, "java"), "mvn", "-B", "-q", "verify") // downloads JUnit and plugins from Maven Central
+	})
+	t.Run("bun", func(t *testing.T) {
+		if _, err := exec.LookPath("bun"); err != nil {
+			missingTool(t, "bun not installed")
+		}
+		dir := gen(t, "bun")
+		sh(t, dir, "bun", "install")
+		sh(t, dir, "bun", "check")
+		sh(t, dir, "bun", "test")
+	})
 	t.Run("rust", func(t *testing.T) {
 		if _, err := exec.LookPath("cargo"); err != nil {
 			missingTool(t, "cargo not installed")

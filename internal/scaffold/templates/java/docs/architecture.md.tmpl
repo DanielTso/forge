@@ -1,0 +1,19 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/main/java/<% .JavaPath %>/App.java` | The program (package `<% .JavaPackage %>`) |
+| `src/test/java/<% .JavaPath %>/` | JUnit tests |
+| `pom.xml` | Maven build: Java 25, JUnit, and the jar's main class |
+| `docs/` | Documentation and ADRs |
+
+The Java package comes from the module path (`-m github.com/<user>/<repo>` gives `io.github.<user>`), or
+`com.example` if none was given. Rename it to your own reversed domain.
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

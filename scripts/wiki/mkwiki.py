@@ -25,7 +25,7 @@ ok   github.com/you/todo-app/internal/app   coverage: 100.0% of statements
 |---|---|
 | Install forge | [Installation](Installation) |
 | Make your first project in 5 minutes | [Quick Start](Quick-Start) |
-| Choose between Go, Python, TypeScript, Deno, Rust, Gleam, Zig… | [Project Types](Project-Types) |
+| Choose between Go, Python, TypeScript, Deno, Bun, Java, Rust, Gleam, Zig… | [Project Types](Project-Types) |
 | Add CI, Docker or a license to an existing project | [Adding Components](Adding-Components) |
 | Update an existing project's GitHub Actions | [Upgrading Projects](Upgrading-Projects) |
 | Build with Claude or another AI assistant | [Using forge with AI](Using-forge-with-AI) |
@@ -58,7 +58,16 @@ forge --version
 
 `go install` puts the program in `~/go/bin` (Windows: `%USERPROFILE%\\go\\bin`). If your shell says `forge: command not found`, add that folder to your `PATH`, or open a new terminal.
 
-## Option 2: download a ready-made binary (no Go needed)
+## Option 2: Homebrew (macOS or Linux)
+
+```sh
+brew tap DanielTso/forge https://github.com/DanielTso/forge
+brew install --cask DanielTso/forge/forge
+```
+
+Update later with `brew upgrade --cask DanielTso/forge/forge`.
+
+## Option 3: download a ready-made binary (no Go needed)
 
 1. Open the [latest release](https://github.com/DanielTso/forge/releases/latest).
 2. Download the file for your system:
@@ -101,6 +110,8 @@ forge itself needs nothing else. To *run* the projects it creates you need that 
 | `node` | Node.js 20+ |
 | `typescript` | Node.js 22+ |
 | `deno` | [Deno](https://deno.com) 2.x |
+| `bun` | [Bun](https://bun.sh) 1.4 |
+| `java` | a JDK 25 (e.g. [Temurin](https://adoptium.net)) and [Maven](https://maven.apache.org) |
 | `rust` | Rust via [rustup](https://rustup.rs) |
 | `gleam` | [Gleam](https://gleam.run) and Erlang/OTP |
 | `zig` | [Zig](https://ziglang.org) 0.17.1 |
@@ -210,6 +221,8 @@ notes = {
  "rust": ("A Rust program with its logic in a library crate.", "`src/lib.rs` holds the logic (easy to unit-test); `src/main.rs` is a thin binary; `tests/cli.rs` runs the real compiled program. `make check` runs rustfmt, clippy (warnings are errors) and the tests.", "make test · make run · make check"),
  "typescript": ("TypeScript on Node.js, for CLIs, APIs and libraries.", "`src/` holds the code and `test/` the tests; `tsc` compiles both into `dist/` and Node's built-in test runner runs them. Strict compiler settings catch mistakes early, and ESLint uses typescript-eslint. TypeScript is pinned to 6.x because TypeScript 7 removed `tsserver`, which code-intelligence tools (including Claude's language server) still need. Run `make install` first.", "make install · make test · make check · make run"),
  "deno": ("TypeScript with Deno, the all-in-one runtime.", "No config to maintain: Deno has its own formatter, linter, type checker and test runner (`make check` runs all four). `main.ts` is the entry point and `src/` holds the code, with `*_test.ts` files beside it. `make build` compiles a single standalone binary.", "make run · make test · make check · make build"),
+ "bun": ("TypeScript with Bun, the fast all-in-one runtime.", "Bun runs TypeScript directly, so there is no build step: `src/cli.ts` is the program and `src/index.ts` the library, with `bun:test` tests beside them. Type-checking is built in (`bun check`), and `make build` compiles a single standalone binary. The Bun version is pinned in `package.json` (`packageManager`), which CI installs.", "make install · make test · make check · make run · make build"),
+ "java": ("Java 25 with Maven.", "`App.java` holds the program and JUnit 6 tests live under `src/test/java`. `make run` builds a runnable jar. The Java package comes from the module path: `-m github.com/<user>/<repo>` gives `io.github.<user>.<name>`, otherwise `com.example.<name>`.", "make test · make check · make run"),
  "gleam": ("Gleam, a friendly type-safe language that runs on the Erlang VM.", "`src/<name>.gleam` holds the code, and tests in `test/` use gleeunit (public functions ending in `_test`). The formatter is part of the compiler, and dependencies come from Hex. Needs Gleam and Erlang/OTP installed.", "make run · make test · make check"),
  "zig": ("Zig, a fast systems language and a modern alternative to C.", "`src/root.zig` is the library (with its tests inline) and `src/main.zig` is the program. `build.zig` defines `zig build`, `zig build run` and `zig build test`. `build.zig.zon` holds the package name and a generated fingerprint that Zig requires. Targets Zig 0.17.1; Zig is pre-1.0, so expect template updates as it changes.", "make run · make test · make check · make build"),
  "generic": ("Any language, or docs-only projects.", "Only the shared, language-neutral files. Use it for documentation repos, or languages forge has no template for yet.", "(no Makefile)"),
@@ -235,7 +248,7 @@ pt.append("""
 """)
 for t,(best,detail,cmds) in notes.items():
     pt.append(f"## {t}\n\n{best} {detail}\n\n```sh\nforge new my-{t} -t {t}\n```\n\n```text\n{tree(t)}\n```\n\n**Common commands:** {cmds}\n\n")
-pt.append("To add a Dockerfile to `go-cli`, `python`, `node`, `typescript`, `deno` or `rust` projects: `forge add dockerfile`. See [Adding Components](Adding-Components).\n")
+pt.append("To add a Dockerfile to `go-cli`, `python`, `node`, `typescript`, `deno`, `bun`, `java` or `rust` projects: `forge add dockerfile`. See [Adding Components](Adding-Components).\n")
 P["Project-Types"] = "".join(pt)
 
 P["Adding-Components"] = """# Adding Components
@@ -259,6 +272,8 @@ forge looks at the folder to work out the language:
 | `package.json` | `node` (name read from `"name"`) |
 | `Cargo.toml` | `rust` (name read from `[package]`) |
 | `deno.json` | `deno` |
+| `bun.lock`, `bunfig.toml`, or `"packageManager": "bun@…"` in package.json | `bun` |
+| `pom.xml` | `java` |
 | `gleam.toml` | `gleam` (name read from the top-level `name`) |
 | `build.zig` | `zig` (name read from `build.zig.zon`) |
 | `package.json` and `tsconfig.json` | `typescript` (name read from `"name"`) |
@@ -324,6 +339,22 @@ Updated 2 action pin(s):
 It works on **any** project with `.github/workflows/`, whether or not forge made it. Run it twice and the
 second run reports *up to date*.
 
+## Tool versions
+
+Some actions take a tool version in their `with:` block. `forge upgrade` treats them by how safe the update is:
+
+| Setting | What upgrade does |
+|---|---|
+| `gleam-version` (erlef/setup-beam) | Updates it within the same major version (1.x), which Gleam keeps compatible |
+| `otp-version` (erlef/setup-beam) | Reports the newer version only |
+| `version` (mlugg/setup-zig) | Reports the newer version only: Zig's standard library changes every release |
+| `java-version` (actions/setup-java) | Reports the newer version only |
+
+```console
+Newer versions available (not changed):
+  .github/workflows/ci.yml:12  mlugg/setup-zig version 0.16.0 -> 0.17.1 is available; update it by hand (it can need code changes)
+```
+
 ## Keeping current afterwards
 
 If the project has no `.github/dependabot.yml`, `forge upgrade` suggests `forge add dependabot`. Dependabot then
@@ -362,7 +393,7 @@ Project name: 1bad
   invalid project name "1bad": must start with a letter and contain only letters, digits, '.', '_' or '-'
 Project name: good-name
 Choose [1]: 99
-  enter a number between 1 and 11, or a type name
+  enter a number between 1 and 13, or a type name
 ```
 
 ## Example: mix flags and questions
@@ -374,7 +405,7 @@ forge new my-api -t go-service -i
 Asks only for the description, module path, author and license.
 """
 
-P["Command-Reference"] = "# Command Reference\n\nOutput of each command's `--help`, from forge v0.3.0.\n\n" + "".join(
+P["Command-Reference"] = "# Command Reference\n\nOutput of each command's `--help`, from forge v0.4.0.\n\n" + "".join(
     f"## `forge {c}`\n\n```text\n{helptext(*([c] if c else []), '--help')}\n```\n\n" for c in ["", "new", "init", "add", "upgrade"]
 ) + """## `forge list`
 

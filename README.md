@@ -6,7 +6,7 @@
 
 `forge` scaffolds new projects using industry-standard structure — README, LICENSE, `.gitignore`,
 `.editorconfig`, CHANGELOG, CONTRIBUTING, `docs/`, CI workflows, a Makefile and starter code with tests —
-so every project starts from the same solid baseline. Go, Python, Node, TypeScript, Deno, Rust, Gleam and Zig.
+so every project starts from the same solid baseline. Go, Python, Node, TypeScript, Deno, Bun, Java, Rust, Gleam and Zig.
 
 **📖 [Read the wiki](https://github.com/DanielTso/forge/wiki)**: [Quick Start](https://github.com/DanielTso/forge/wiki/Quick-Start) · [Project Types](https://github.com/DanielTso/forge/wiki/Project-Types) · [Using forge with AI](https://github.com/DanielTso/forge/wiki/Using-forge-with-AI) · [Troubleshooting](https://github.com/DanielTso/forge/wiki/Troubleshooting-and-FAQ)
 
@@ -47,6 +47,13 @@ Every generated project is tested in CI with its own toolchain (golangci-lint; r
 go install github.com/DanielTso/forge@latest
 ```
 
+With Homebrew (macOS or Linux):
+
+```sh
+brew tap DanielTso/forge https://github.com/DanielTso/forge
+brew install --cask DanielTso/forge/forge
+```
+
 No Go toolchain? Download a prebuilt binary for Linux, macOS or Windows (amd64 / arm64) from the
 [latest release](https://github.com/DanielTso/forge/releases/latest), unpack it, and put `forge` on your `PATH`.
 Each release includes `checksums.txt` for verification.
@@ -66,7 +73,7 @@ forge list                                   # project types and licenses
 forge new                                    # interactive: asks for each option
 forge new my-tool                            # Go CLI in ./my-tool (default type)
 forge new my-api -t go-service -m github.com/me/my-api
-forge new my-app -t python                   # also: typescript, deno, node, rust, gleam, zig, go-lib, generic
+forge new my-app -t python                   # also: typescript, deno, bun, java, node, rust, gleam, zig, go-lib, generic
 forge new my-lib -t go-lib -l Apache-2.0 --dry-run   # preview only
 mkdir notes && cd notes && forge init -t generic     # scaffold in the current directory
 forge add                                    # list components
@@ -87,7 +94,7 @@ Go module (Go types), author and license, offering sensible defaults (Enter acce
 
 | Flag | Meaning |
 | --- | --- |
-| `-t, --type` | `go-cli` (default), `go-service`, `go-lib`, `python`, `node`, `typescript`, `deno`, `rust`, `gleam`, `zig`, `generic` |
+| `-t, --type` | `go-cli` (default), `go-service`, `go-lib`, `python`, `node`, `typescript`, `deno`, `bun`, `java`, `rust`, `gleam`, `zig`, `generic` |
 | `-m, --module` | Go module path (default: project name) |
 | `-d, --description` | one-line description |
 | `-a, --author` | copyright holder (default: `git config user.name`) |
@@ -133,6 +140,8 @@ templates use today (for example `actions/checkout@v4` → `@v7`). Works on any 
 - Only the version on each `uses:` line changes; comments, quotes and everything else stay as written.
 - Never downgrades; pins to a commit SHA or a branch are left alone; actions forge doesn't use are left alone.
 - `--dry-run` lists every change with its file and line. Running it twice changes nothing the second time.
+- Tool versions inside a step's `with:` are handled too: `gleam-version` is updated within 1.x; Zig, Erlang/OTP
+  and Java versions are only reported (moving to them can need code changes).
 - Suggests `forge add dependabot` (and `ci`) when they're missing. Dependabot then keeps the versions current.
 
 ## Project types
@@ -149,6 +158,8 @@ templates use today (for example `actions/checkout@v4` → `@v7`). Works on any 
 | `deno` | Deno + TypeScript using its built-in fmt, lint, type-check and test; `deno compile` to a single binary |
 | `gleam` | Gleam on the Erlang VM, gleeunit tests, formatter, CI with setup-beam |
 | `zig` | Zig 0.17 executable + library module, `zig build test`, `zig fmt`, valid package fingerprint |
+| `bun` | Bun + TypeScript, `bun:test`, built-in `bun check` type-checking, single-binary build |
+| `java` | Java 25 with Maven, JUnit 6, runnable jar; package from the module path (`io.github.<user>`) |
 | `generic` | only the language-agnostic files below |
 
 All types include: `README.md`, `LICENSE`, `CHANGELOG.md`, `CONTRIBUTING.md`, `.gitignore`, `.editorconfig`,

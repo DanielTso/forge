@@ -39,3 +39,28 @@ changelog:
       - "^docs:"
       - "^test:"
       - "^chore:"
+
+# Homebrew: `brew install DanielTso/forge/forge` (the tap is this repository; the release
+# workflow commits the cask to Casks/ with the repo's own GITHUB_TOKEN, so no extra secret).
+homebrew_casks:
+  - name: forge
+    repository:
+      owner: DanielTso
+      name: forge
+    directory: Casks
+    homepage: https://github.com/DanielTso/forge
+    description: Scaffold projects with industry-standard structure
+    license: MIT
+    binaries:
+      - forge
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    commit_msg_template: "Homebrew cask update for {{ .ProjectName }} {{ .Tag }}"
+    hooks:
+      post:
+        # The binary is not notarized: clear macOS's quarantine flag so it runs.
+        install_steps: |
+          if OS.mac?
+            run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/forge"]
+          end

@@ -1,0 +1,24 @@
+{
+  "name": "<% .NpmName %>",
+  "version": "0.1.0",
+  "description": "<% .Description %>",
+  "type": "module",
+  "module": "src/index.ts",
+  "bin": {
+    "<% .NpmName %>": "./src/cli.ts"
+  },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "bun check",
+    "build": "bun build src/cli.ts --compile --outfile bin/<% .Name %>"
+  },
+<%- if ne .License "none" %>
+  "license": "<% .License %>",
+<%- end %>
+  "author": "<% .Author %>",
+  "packageManager": "bun@1.4.4",
+  "devDependencies": {
+    "@types/bun": "^1.4.4"
+  }
+}

@@ -17,6 +17,16 @@ updates:
     directory: /
     schedule:
       interval: weekly
+<%- else if .IsBun %>
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+<%- else if .IsJava %>
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: weekly
 <%- else if .IsRust %>
   - package-ecosystem: cargo
     directory: /

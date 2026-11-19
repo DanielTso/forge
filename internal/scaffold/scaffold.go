@@ -71,8 +71,49 @@ func (o Options) IsGleam() bool { return o.Lang() == "gleam" }
 // IsZig reports whether the project type is a Zig project.
 func (o Options) IsZig() bool { return o.Lang() == "zig" }
 
+// IsJava reports whether the project type is a Java (Maven) project.
+func (o Options) IsJava() bool { return o.Lang() == "java" }
+
+// IsBun reports whether the project type is a Bun project.
+func (o Options) IsBun() bool { return o.Lang() == "bun" }
+
 // UsesNpm reports whether the project installs dependencies with npm.
 func (o Options) UsesNpm() bool { return o.IsNode() || o.IsTypeScript() }
+
+// UsesNodeModules reports whether the project keeps dependencies in node_modules/ (npm or Bun).
+func (o Options) UsesNodeModules() bool { return o.UsesNpm() || o.IsBun() }
+
+// JavaGroup is the Maven groupId: io.github.<user> for a github.com/<user>/... module, else com.example.
+func (o Options) JavaGroup() string {
+	parts := strings.Split(o.Module, "/")
+	if len(parts) >= 3 && parts[0] == "github.com" {
+		if user := javaIdent(parts[1]); user != "" {
+			return "io.github." + user
+		}
+	}
+	return "com.example"
+}
+
+// JavaPackage is the project's Java package, e.g. io.github.me.mytool.
+func (o Options) JavaPackage() string { return o.JavaGroup() + "." + javaIdent(o.Pkg) }
+
+// JavaPath is JavaPackage as a directory path, e.g. io/github/me/mytool.
+func (o Options) JavaPath() string { return strings.ReplaceAll(o.JavaPackage(), ".", "/") }
+
+// javaIdent makes s a lowercase Java identifier segment: letters, digits and _, not starting with a digit.
+func javaIdent(s string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(s) {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '_' {
+			b.WriteRune(r)
+		}
+	}
+	out := b.String()
+	if out != "" && out[0] >= '0' && out[0] <= '9' {
+		out = "_" + out
+	}
+	return out
+}
 
 // HasMakefile reports whether the project type ships a Makefile.
 func (o Options) HasMakefile() bool { return o.Lang() != "" }
@@ -270,7 +311,7 @@ func renderSet(set string, opts Options) ([]File, error) {
 			return err
 		}
 
-		dest := strings.NewReplacer("__name__", opts.Name, "__pkg__", opts.Pkg, "__snake__", opts.Snake).Replace(rel)
+		dest := strings.NewReplacer("__name__", opts.Name, "__pkg__", opts.Pkg, "__snake__", opts.Snake, "__javapath__", opts.JavaPath()).Replace(rel)
 		content := raw
 		if strings.HasSuffix(dest, ".tmpl") {
 			dest = strings.TrimSuffix(dest, ".tmpl")

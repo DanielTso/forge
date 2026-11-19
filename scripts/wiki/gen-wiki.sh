@@ -14,7 +14,7 @@ command -v tree >/dev/null || { echo "tree not installed" >&2; exit 1; }
 
 gen=$(mktemp -d)
 trap 'rm -rf "$gen"' EXIT
-for t in go-cli go-service go-lib python node typescript deno rust gleam zig generic; do
+for t in go-cli go-service go-lib python node typescript deno bun java rust gleam zig generic; do
   (cd "$gen" && forge new "my-$t" -t "$t" --no-git -y -m "github.com/you/my-$t" >/dev/null && tree -a --dirsfirst "my-$t" > "$t.tree")
 done
 mkdir -p "$out"

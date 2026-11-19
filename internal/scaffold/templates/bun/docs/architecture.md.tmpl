@@ -1,0 +1,19 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/index.ts` | Public API |
+| `src/cli.ts` | Command-line entry point (Bun runs TypeScript directly, no build step) |
+| `src/*.test.ts` | Tests using Bun's built-in runner (`bun:test`) |
+| `package.json` | Scripts, and the pinned Bun version (`packageManager`) CI installs |
+| `docs/` | Documentation and ADRs |
+
+Type-checking is built in (`bun check`); `make build` compiles a single standalone binary.
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

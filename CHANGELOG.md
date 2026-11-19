@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-19
+
+### Added
+
+- `bun` project type: Bun + TypeScript, `bun:test`, built-in `bun check`, `bun build --compile`, Dockerfile.
+- `java` project type: Java 25 + Maven, JUnit 6, runnable jar, Dockerfile (non-root JRE image); the package
+  comes from the module path (`github.com/<user>/…` → `io.github.<user>`), else `com.example`.
+- Homebrew: releases publish a cask to this repository
+  (`brew tap DanielTso/forge https://github.com/DanielTso/forge && brew install --cask DanielTso/forge/forge`).
+- `forge upgrade` also handles tool versions inside a step's `with:` block: `gleam-version` is updated within
+  the same major version; Zig, Erlang/OTP and Java versions are reported as advice, not changed.
+
+### Fixed
+
+- `forge add` detects a new Bun project (before `bun install` creates `bun.lock`) from `package.json`'s
+  `packageManager` or a `@types/bun` dependency, instead of treating it as TypeScript.
+
 ## [0.3.0] - 2026-11-19
 
 ### Added
@@ -90,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integration tests run each generated project's own toolchain (golangci-lint; ruff, mypy and
   pytest; node --test; cargo fmt, clippy and test).
 
-[Unreleased]: https://github.com/DanielTso/forge/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/DanielTso/forge/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/DanielTso/forge/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/DanielTso/forge/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/DanielTso/forge/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/DanielTso/forge/compare/v0.1.3...v0.2.0

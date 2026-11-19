@@ -1,0 +1,32 @@
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: install
+install: ## Install dependencies
+	bun install
+
+.PHONY: run
+run: ## Run the CLI
+	bun run src/cli.ts
+
+.PHONY: test
+test: ## Run tests
+	bun test
+
+.PHONY: typecheck
+typecheck: ## Type-check
+	bun check
+
+.PHONY: check
+check: typecheck test ## Type-check and test
+
+.PHONY: build
+build: ## Compile a standalone binary into bin/
+	bun run build
+
+.PHONY: clean
+clean: ## Remove build output and dependencies
+	rm -rf bin node_modules

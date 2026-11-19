@@ -58,6 +58,20 @@ make test    # zig build test
 make check   # zig fmt --check and tests
 make build   # release build into zig-out/
 ```
+<% else if .IsBun -%>
+```sh
+make install   # bun install
+make test      # bun test
+make check     # type-check and test
+make run       # run the CLI
+make build     # standalone binary in bin/
+```
+<% else if .IsJava -%>
+```sh
+make test    # mvn test
+make check   # mvn verify
+make run     # build the jar and run it
+```
 <% else -%>
 TODO: installation and usage instructions.
 <% end %>

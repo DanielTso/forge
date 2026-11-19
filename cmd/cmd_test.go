@@ -110,7 +110,7 @@ func TestList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"go-cli", "go-service", "go-lib", "python", "node", "rust", "typescript", "deno", "gleam", "zig", "generic", "MIT"} {
+	for _, want := range []string{"go-cli", "go-service", "go-lib", "python", "node", "rust", "typescript", "deno", "gleam", "zig", "bun", "java", "generic", "MIT"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("list output missing %q", want)
 		}
@@ -126,6 +126,8 @@ func TestNewAllLanguageTypes(t *testing.T) {
 		"deno":       "deno.json",
 		"gleam":      "gleam.toml",
 		"zig":        "build.zig.zon",
+		"java":       "pom.xml",
+		"bun":        "tsconfig.json",
 	}
 	for typ, manifest := range want {
 		dir := t.TempDir()
@@ -413,7 +415,7 @@ func TestUpgradeCommand(t *testing.T) {
 	t.Chdir(dir)
 
 	out, err := run(t, "upgrade", "--dry-run")
-	if err != nil || !strings.Contains(out, "Would update 1 action pin") || !strings.Contains(out, "forge add dependabot") {
+	if err != nil || !strings.Contains(out, "Would update 1 version") || !strings.Contains(out, "forge add dependabot") {
 		t.Fatalf("dry run: %v\n%s", err, out)
 	}
 	if b, _ := os.ReadFile(wf); string(b) != body {
@@ -421,7 +423,7 @@ func TestUpgradeCommand(t *testing.T) {
 	}
 
 	out, err = run(t, "upgrade")
-	if err != nil || !strings.Contains(out, "Updated 1 action pin") {
+	if err != nil || !strings.Contains(out, "Updated 1 version") {
 		t.Fatalf("upgrade: %v\n%s", err, out)
 	}
 	if b, _ := os.ReadFile(wf); strings.Contains(string(b), "@v2") {

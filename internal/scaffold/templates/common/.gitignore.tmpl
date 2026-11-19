@@ -37,8 +37,8 @@ dist/
 .coverage
 htmlcov/
 <% end -%>
-<% if .UsesNpm %>
-# Node
+<% if .UsesNodeModules %>
+# Node / Bun
 node_modules/
 dist/
 coverage/
@@ -59,6 +59,15 @@ coverage/
 *.ez
 /build/
 erl_crash.dump
+<% end -%>
+<% if .IsJava %>
+# Java
+target/
+*.class
+<% end -%>
+<% if .IsBun %>
+# Bun
+/bin/
 <% end -%>
 <% if .IsZig %>
 # Zig

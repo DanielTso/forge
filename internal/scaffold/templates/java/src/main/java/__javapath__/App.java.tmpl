@@ -1,0 +1,16 @@
+package <% .JavaPackage %>;
+
+/** <% .Description %> */
+public final class App {
+    private App() {}
+
+    /** Returns a greeting for {@code name}, or for the world if it is empty. */
+    public static String greet(String name) {
+        String who = (name == null || name.isBlank()) ? "world" : name;
+        return "Hello, " + who + "!";
+    }
+
+    public static void main(String[] args) {
+        System.out.println(greet(args.length > 0 ? args[0] : ""));
+    }
+}

@@ -52,6 +52,12 @@ func Detect(dir string) (Detected, error) {
 				break
 			}
 		}
+	case exists(dir, "bun.lock") || exists(dir, "bun.lockb") || exists(dir, "bunfig.toml") ||
+		usesBun(filepath.Join(dir, "package.json")):
+		d.Type = "bun"
+		d.Name = packageJSONName(filepath.Join(dir, "package.json"))
+	case exists(dir, "pom.xml"):
+		d.Type = "java"
 	case exists(dir, "gleam.toml"):
 		d.Type = "gleam"
 		d.Name = tomlName(filepath.Join(dir, "gleam.toml"), "")
@@ -115,6 +121,26 @@ func zonName(file string) string {
 }
 
 var zonNameRe = regexp.MustCompile(`\.name\s*=\s*\.(?:@"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*))`)
+
+// usesBun reports whether a package.json is a Bun project's: `"packageManager": "bun@…"` or a
+// dependency on @types/bun. A new Bun project has no bun.lock until `bun install` has run.
+func usesBun(file string) bool {
+	b, err := os.ReadFile(file)
+	if err != nil {
+		return false
+	}
+	var pkg struct {
+		PackageManager  string            `json:"packageManager"`
+		Dependencies    map[string]string `json:"dependencies"`
+		DevDependencies map[string]string `json:"devDependencies"`
+	}
+	if json.Unmarshal(b, &pkg) != nil {
+		return false
+	}
+	_, dep := pkg.Dependencies["@types/bun"]
+	_, devDep := pkg.DevDependencies["@types/bun"]
+	return strings.HasPrefix(pkg.PackageManager, "bun@") || dep || devDep
+}
 
 func packageJSONName(file string) string {
 	b, err := os.ReadFile(file)

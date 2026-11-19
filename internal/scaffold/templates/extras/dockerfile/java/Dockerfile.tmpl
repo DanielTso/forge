@@ -1,0 +1,12 @@
+# syntax=docker/dockerfile:1
+FROM maven:3-eclipse-temurin-25 AS build
+WORKDIR /src
+COPY pom.xml ./
+RUN mvn -B -q dependency:go-offline
+COPY src ./src
+RUN mvn -B -q package -DskipTests
+
+FROM eclipse-temurin:25-jre
+COPY --from=build /src/target/<% .NpmName %>-0.1.0.jar /app/app.jar
+USER 65534
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

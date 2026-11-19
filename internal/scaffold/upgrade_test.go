@@ -128,3 +128,68 @@ func TestFreshProjectsAreAlreadyCurrent(t *testing.T) {
 		}
 	}
 }
+
+func TestUpgradeToolVersions(t *testing.T) {
+	tools, err := ToolPins()
+	if err != nil {
+		t.Fatal(err)
+	}
+	gleam := tools["erlef/setup-beam"]["gleam-version"]
+	if gleam == "" || tools["mlugg/setup-zig"]["version"] == "" || tools["actions/setup-java"]["java-version"] == "" {
+		t.Fatalf("missing tool pins: %+v", tools)
+	}
+	dir := t.TempDir()
+	body := `jobs:
+  t:
+    steps:
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "1"
+          gleam-version: "1.0.0"   # keep
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.0.1
+      - uses: goreleaser/goreleaser-action@v7
+        with:
+          version: 0.0.1
+      - uses: erlef/setup-beam@v1
+        with:
+          gleam-version: "0.34.0"
+`
+	p := writeWorkflow(t, dir, "ci.yml", body)
+	plan, err := PlanUpgrade(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Only gleam 1.0.0 is bumped: same major. 0.34 -> 1.x is a major jump, so it is advice.
+	if len(plan.Changes) != 1 || plan.Changes[0].Line != 7 || plan.Changes[0].To != gleam {
+		t.Fatalf("changes: %+v", plan.Changes)
+	}
+	if len(plan.Advisories) != 3 {
+		t.Fatalf("want advice for otp, zig and gleam 0.34, got: %q", plan.Advisories)
+	}
+	for _, a := range plan.Advisories {
+		if strings.Contains(a, "goreleaser") {
+			t.Errorf("unrelated action's version key reported: %s", a)
+		}
+	}
+	if err := ApplyUpgrade(dir, plan); err != nil {
+		t.Fatal(err)
+	}
+	got, _ := os.ReadFile(p)
+	if !strings.Contains(string(got), `gleam-version: "`+gleam+`"   # keep`) || !strings.Contains(string(got), "version: 0.0.1") {
+		t.Errorf("unexpected file:\n%s", got)
+	}
+}
+
+func TestCompareVersions(t *testing.T) {
+	cases := []struct {
+		a, b string
+		want int
+	}{{"1.19.2", "1.19.2", 0}, {"1.9", "1.19", -1}, {"2", "1.99.9", 1}, {"0.17.1", "0.17", 1}}
+	for _, c := range cases {
+		if got := compareVersions(c.a, c.b); got != c.want {
+			t.Errorf("compareVersions(%q, %q) = %d, want %d", c.a, c.b, got, c.want)
+		}
+	}
+}

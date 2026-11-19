@@ -53,6 +53,14 @@ func TestDetect(t *testing.T) {
 		{"zig", map[string]string{"build.zig": "", "build.zig.zon": ".{\n    .name = .ziggy,\n}\n"}, Detected{Type: "zig", Name: "ziggy"}},
 		{"typescript", map[string]string{"package.json": `{"name":"tsname"}`, "tsconfig.json": "{}"},
 			Detected{Type: "typescript", Name: "tsname"}},
+		{"java", map[string]string{"pom.xml": "<project/>"}, Detected{Type: "java"}},
+		{"new bun project (no lockfile yet)", map[string]string{"package.json": `{"name":"b","packageManager":"bun@1.4.4"}`, "tsconfig.json": "{}"},
+			Detected{Type: "bun", Name: "b"}},
+		{"bun types dependency", map[string]string{"package.json": `{"name":"b","devDependencies":{"@types/bun":"^1"}}`},
+			Detected{Type: "bun", Name: "b"}},
+		{"bun", map[string]string{"package.json": `{"name":"bunny"}`, "tsconfig.json": "{}", "bun.lock": ""}, Detected{Type: "bun", Name: "bunny"}},
+		{"python with bun frontend", map[string]string{"pyproject.toml": "[project]\nname = \"webapp\"\n", "bun.lock": ""},
+			Detected{Type: "python", Name: "webapp"}},
 		{"rust", map[string]string{"Cargo.toml": "[package]\nname = 'rustname'\n[dependencies]\nname = \"nope\"\n"},
 			Detected{Type: "rust", Name: "rustname"}},
 	}
@@ -112,7 +120,7 @@ func TestComponentErrors(t *testing.T) {
 func TestDockerfileIsLanguageSpecific(t *testing.T) {
 	want := map[string]string{
 		"go-cli": "golang:", "go-service": "golang:", "python": "python:", "node": "node:", "rust": "rust:",
-		"typescript": "node:", "deno": "denoland/deno:",
+		"typescript": "node:", "deno": "denoland/deno:", "java": "eclipse-temurin:", "bun": "oven/bun:",
 	}
 	c, _ := LookupComponent("dockerfile")
 	for typ, base := range want {

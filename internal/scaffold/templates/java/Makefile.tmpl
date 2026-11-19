@@ -1,0 +1,28 @@
+JAR := target/<% .NpmName %>-0.1.0.jar
+
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: build
+build: ## Compile, test and package the jar
+	mvn -B -q package
+
+.PHONY: run
+run: ## Build (without tests) and run the jar
+	mvn -B -q package -DskipTests
+	java -jar $(JAR)
+
+.PHONY: test
+test: ## Run tests
+	mvn -B -q test
+
+.PHONY: check
+check: ## Compile, test and verify
+	mvn -B -q verify
+
+.PHONY: clean
+clean: ## Remove build output
+	mvn -B -q clean
