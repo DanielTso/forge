@@ -38,6 +38,8 @@ jobs:
         with:
           version: 0.17.1
       - run: go test -race -cover ./...
+        env:
+          FORGE_REQUIRE_TOOLCHAINS: "1"
   lint:
     runs-on: ubuntu-latest
     steps:

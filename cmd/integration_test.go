@@ -15,7 +15,7 @@ func TestGeneratedGoProjectsBuildAndPass(t *testing.T) {
 	}
 	goBin, err := exec.LookPath("go")
 	if err != nil {
-		t.Skip("go toolchain not on PATH")
+		missingTool(t, "go toolchain not on PATH")
 	}
 
 	for _, typ := range []string{"go-cli", "go-service", "go-lib"} {
@@ -77,13 +77,13 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 
 	t.Run("node", func(t *testing.T) {
 		if _, err := exec.LookPath("node"); err != nil {
-			t.Skip("node not installed")
+			missingTool(t, "node not installed")
 		}
 		sh(t, gen(t, "node"), "node", "--test") // node:test needs no dependencies
 	})
 	t.Run("python", func(t *testing.T) {
 		if _, err := exec.LookPath("python3"); err != nil {
-			t.Skip("python3 not installed")
+			missingTool(t, "python3 not installed")
 		}
 		dir := gen(t, "python")
 		sh(t, dir, "python3", "-m", "compileall", "-q", "src", "tests") // syntax check always
@@ -114,7 +114,7 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 	})
 	t.Run("typescript", func(t *testing.T) {
 		if _, err := exec.LookPath("npm"); err != nil {
-			t.Skip("npm not installed")
+			missingTool(t, "npm not installed")
 		}
 		dir := gen(t, "typescript")
 		sh(t, dir, "npm", "install", "--no-audit", "--no-fund") // needs network: typescript, eslint
@@ -124,16 +124,16 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 	})
 	t.Run("deno", func(t *testing.T) {
 		if _, err := exec.LookPath("deno"); err != nil {
-			t.Skip("deno not installed")
+			missingTool(t, "deno not installed")
 		}
 		sh(t, gen(t, "deno"), "deno", "task", "check") // fmt --check, lint, check, test
 	})
 	t.Run("gleam", func(t *testing.T) {
 		if _, err := exec.LookPath("gleam"); err != nil {
-			t.Skip("gleam not installed")
+			missingTool(t, "gleam not installed")
 		}
 		if _, err := exec.LookPath("erl"); err != nil {
-			t.Skip("erlang (erl) not installed")
+			missingTool(t, "erlang (erl) not installed")
 		}
 		dir := gen(t, "gleam")
 		sh(t, dir, "gleam", "format", "--check", "src", "test")
@@ -141,7 +141,7 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 	})
 	t.Run("zig", func(t *testing.T) {
 		if _, err := exec.LookPath("zig"); err != nil {
-			t.Skip("zig not installed")
+			missingTool(t, "zig not installed")
 		}
 		dir := gen(t, "zig")
 		sh(t, dir, "zig", "fmt", "--check", ".")
@@ -149,11 +149,21 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 	})
 	t.Run("rust", func(t *testing.T) {
 		if _, err := exec.LookPath("cargo"); err != nil {
-			t.Skip("cargo not installed")
+			missingTool(t, "cargo not installed")
 		}
 		dir := gen(t, "rust")
 		sh(t, dir, "cargo", "fmt", "--check")
 		sh(t, dir, "cargo", "clippy", "--all-targets", "--", "-D", "warnings")
 		sh(t, dir, "cargo", "test")
 	})
+}
+
+// missingTool skips a test whose toolchain is not installed, or fails it when
+// FORGE_REQUIRE_TOOLCHAINS=1 (set in CI), so a green CI run proves every template was exercised.
+func missingTool(t *testing.T, why string) {
+	t.Helper()
+	if os.Getenv("FORGE_REQUIRE_TOOLCHAINS") == "1" {
+		t.Fatalf("%s (FORGE_REQUIRE_TOOLCHAINS=1)", why)
+	}
+	t.Skip(why)
 }
