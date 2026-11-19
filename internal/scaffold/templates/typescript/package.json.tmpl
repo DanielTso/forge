@@ -1,0 +1,37 @@
+{
+  "name": "<% .NpmName %>",
+  "version": "0.1.0",
+  "description": "<% .Description %>",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": "./dist/src/index.js",
+  "bin": {
+    "<% .NpmName %>": "./dist/src/cli.js"
+  },
+  "files": [
+    "dist/src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/cli.js",
+    "test": "tsc && node --test dist/test/*.test.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=22"
+  },
+<%- if ne .License "none" %>
+  "license": "<% .License %>",
+<%- end %>
+  "author": "<% .Author %>",
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^16.0.0",
+    "typescript": "~6.0.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}

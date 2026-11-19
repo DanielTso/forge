@@ -1,0 +1,30 @@
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: build
+build: ## Build into zig-out/
+	zig build --release=safe
+
+.PHONY: run
+run: ## Run the program
+	zig build run
+
+.PHONY: test
+test: ## Run tests
+	zig build test --summary all
+
+.PHONY: fmt
+fmt: ## Format code
+	zig fmt .
+
+.PHONY: check
+check: ## Format check and test
+	zig fmt --check .
+	zig build test
+
+.PHONY: clean
+clean: ## Remove build output
+	rm -rf .zig-cache zig-out

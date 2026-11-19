@@ -1,0 +1,13 @@
+.{
+    .name = .<% .Snake %>,
+    .version = "0.1.0",
+    // Identifies this package; derived from the name. Changing it has security and trust implications.
+    .fingerprint = <% .ZigFingerprint %>,
+    .minimum_zig_version = "0.17.1",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

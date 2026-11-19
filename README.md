@@ -6,7 +6,7 @@
 
 `forge` scaffolds new projects using industry-standard structure — README, LICENSE, `.gitignore`,
 `.editorconfig`, CHANGELOG, CONTRIBUTING, `docs/`, CI workflows, a Makefile and starter code with tests —
-so every project starts from the same solid baseline. Go, Python, Node and Rust.
+so every project starts from the same solid baseline. Go, Python, Node, TypeScript, Deno, Rust, Gleam and Zig.
 
 **📖 [Read the wiki](https://github.com/DanielTso/forge/wiki)**: [Quick Start](https://github.com/DanielTso/forge/wiki/Quick-Start) · [Project Types](https://github.com/DanielTso/forge/wiki/Project-Types) · [Using forge with AI](https://github.com/DanielTso/forge/wiki/Using-forge-with-AI) · [Troubleshooting](https://github.com/DanielTso/forge/wiki/Troubleshooting-and-FAQ)
 
@@ -66,7 +66,7 @@ forge list                                   # project types and licenses
 forge new                                    # interactive: asks for each option
 forge new my-tool                            # Go CLI in ./my-tool (default type)
 forge new my-api -t go-service -m github.com/me/my-api
-forge new my-app -t python                   # also: node, rust, go-lib, generic
+forge new my-app -t python                   # also: typescript, deno, node, rust, gleam, zig, go-lib, generic
 forge new my-lib -t go-lib -l Apache-2.0 --dry-run   # preview only
 mkdir notes && cd notes && forge init -t generic     # scaffold in the current directory
 forge add                                    # list components
@@ -86,7 +86,7 @@ Go module (Go types), author and license, offering sensible defaults (Enter acce
 
 | Flag | Meaning |
 | --- | --- |
-| `-t, --type` | `go-cli` (default), `go-service`, `go-lib`, `python`, `node`, `rust`, `generic` |
+| `-t, --type` | `go-cli` (default), `go-service`, `go-lib`, `python`, `node`, `typescript`, `deno`, `rust`, `gleam`, `zig`, `generic` |
 | `-m, --module` | Go module path (default: project name) |
 | `-d, --description` | one-line description |
 | `-a, --author` | copyright holder (default: `git config user.name`) |
@@ -134,6 +134,10 @@ All components are validated before anything is written, and `--dry-run` / `--fo
 | `python` | `src/` layout, `pyproject.toml` (hatchling), pytest, ruff, mypy, Makefile, CI |
 | `node` | ESM package, `bin/` entry point, `node:test`, ESLint, Makefile, CI |
 | `rust` | binary + library crate, integration test, rustfmt, clippy, Makefile, CI |
+| `typescript` | strict TypeScript on Node (pinned to 6.x for language-server support), node:test, typescript-eslint, Dockerfile-ready |
+| `deno` | Deno + TypeScript using its built-in fmt, lint, type-check and test; `deno compile` to a single binary |
+| `gleam` | Gleam on the Erlang VM, gleeunit tests, formatter, CI with setup-beam |
+| `zig` | Zig 0.17 executable + library module, `zig build test`, `zig fmt`, valid package fingerprint |
 | `generic` | only the language-agnostic files below |
 
 All types include: `README.md`, `LICENSE`, `CHANGELOG.md`, `CONTRIBUTING.md`, `.gitignore`, `.editorconfig`,
@@ -162,7 +166,7 @@ Templates live in `internal/scaffold/templates/<set>/`, embedded into the binary
 - Files ending in `.tmpl` are rendered with `text/template` using `<%` `%>` delimiters
   (so `${{ }}` and Go braces need no escaping); the suffix is stripped. Other files are copied verbatim.
 - `__name__` and `__pkg__` in paths are replaced by the project name / Go package name.
-- `__name__`, `__pkg__` (Go package) and `__snake__` (Python package / Rust crate) in paths are replaced.
+- `__name__`, `__pkg__` (Go package) and `__snake__` (Python package / Rust crate / Gleam module) in paths are replaced.
 - Files that start with a `#!` line are written executable.
 - A project type is a list of template sets applied in order; later sets override earlier files.
 - Optional pieces live in `templates/extras/<name>/<lang>/`; `forge add` renders them on demand.

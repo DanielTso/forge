@@ -3,8 +3,11 @@ package scaffold
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"hash/crc32"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -84,7 +87,10 @@ func TestRustRejectsDotsInName(t *testing.T) {
 }
 
 func TestLanguageSpecificGitignore(t *testing.T) {
-	want := map[string]string{"python": ".venv/", "node": "node_modules/", "rust": "/target/", "go-cli": "/bin/"}
+	want := map[string]string{
+		"python": ".venv/", "node": "node_modules/", "rust": "/target/", "go-cli": "/bin/",
+		"typescript": "node_modules/", "deno": "/bin/", "gleam": "erl_crash.dump", "zig": ".zig-cache/",
+	}
 	for typ, entry := range want {
 		files, _ := Render(newOpts(t, typ))
 		gi := string(paths(files)[".gitignore"].Content)
@@ -111,6 +117,7 @@ func TestDependabotMatchesLanguage(t *testing.T) {
 	want := map[string]string{
 		"go-cli": "gomod", "go-service": "gomod", "go-lib": "gomod",
 		"python": "pip", "node": "npm", "rust": "cargo", "generic": "",
+		"typescript": "npm", "deno": "", "gleam": "", "zig": "",
 	}
 	ecosystems := []string{"gomod", "pip", "npm", "cargo"}
 	for typ, eco := range want {
@@ -157,6 +164,44 @@ func TestPackageJSONIsValidAndIndented(t *testing.T) {
 	}
 }
 
+func TestZigFingerprint(t *testing.T) {
+	o := newOpts(t, "zig")
+	if !regexp.MustCompile(`^0x[0-9a-f]{16}$`).MatchString(o.ZigFingerprint) {
+		t.Fatalf("fingerprint %q is not 0x + 16 hex digits", o.ZigFingerprint)
+	}
+	// Zig checks that the high 32 bits are the CRC32 of the package name.
+	if want := fmt.Sprintf("0x%08x", crc32.ChecksumIEEE([]byte(o.Snake))); o.ZigFingerprint[:10] != want {
+		t.Errorf("high bits %s, want %s (crc32 of %q)", o.ZigFingerprint[:10], want, o.Snake)
+	}
+	if other := newOpts(t, "zig"); other.ZigFingerprint == o.ZigFingerprint {
+		t.Error("the random low 32 bits should differ between projects")
+	}
+	files, _ := Render(o)
+	zon := string(paths(files)["build.zig.zon"].Content)
+	if !strings.Contains(zon, ".name = .my_proj,") || !strings.Contains(zon, ".fingerprint = "+o.ZigFingerprint+",") {
+		t.Errorf("build.zig.zon missing name or fingerprint:\n%s", zon)
+	}
+	if newOpts(t, "go-cli").ZigFingerprint != "" {
+		t.Error("non-Zig projects should get no fingerprint")
+	}
+}
+
+func TestGleamImportsSortedForAnyName(t *testing.T) {
+	// gleam format sorts imports, so the order depends on how the name compares to "gleeunit".
+	for _, name := range []string{"app", "my-proj", "zzz"} {
+		o := Options{Name: name, Type: "gleam", Author: "A", Year: 2026}
+		if err := o.Normalize(); err != nil {
+			t.Fatal(err)
+		}
+		files, _ := Render(o)
+		src := string(paths(files)["test/"+o.Snake+"_test.gleam"].Content)
+		a, b := strings.Index(src, "import "+o.Snake+"\n"), strings.Index(src, "import gleeunit\n")
+		if a < 0 || b < 0 || (a < b) != (o.Snake < "gleeunit") || !strings.HasPrefix(src, "import ") {
+			t.Errorf("%s: imports not in gleam format order:\n%s", name, src)
+		}
+	}
+}
+
 func TestShebangFilesAreExecutable(t *testing.T) {
 	files, _ := Render(newOpts(t, "node"))
 	if m := paths(files)["bin/my-proj.js"].Mode; m != 0o755 {
@@ -185,6 +230,10 @@ func TestRenderAllTypes(t *testing.T) {
 		"python":     {"pyproject.toml", "Makefile", "src/my_proj/__init__.py", "src/my_proj/cli.py", "src/my_proj/__main__.py", "tests/test_cli.py", ".github/workflows/ci.yml"},
 		"node":       {"package.json", "Makefile", "eslint.config.js", "src/index.js", "bin/my-proj.js", "test/index.test.js", ".github/workflows/ci.yml"},
 		"rust":       {"Cargo.toml", "Makefile", "rustfmt.toml", "src/lib.rs", "src/main.rs", "tests/cli.rs", ".github/workflows/ci.yml"},
+		"typescript": {"package.json", "tsconfig.json", "eslint.config.js", "Makefile", "src/index.ts", "src/cli.ts", "test/index.test.ts", ".github/workflows/ci.yml"},
+		"deno":       {"deno.json", "main.ts", "main_test.ts", "src/greet.ts", "src/greet_test.ts", "Makefile", ".github/workflows/ci.yml"},
+		"gleam":      {"gleam.toml", "src/my_proj.gleam", "test/my_proj_test.gleam", "Makefile", ".github/workflows/ci.yml"},
+		"zig":        {"build.zig", "build.zig.zon", "src/main.zig", "src/root.zig", "Makefile", ".github/workflows/ci.yml"},
 	}
 	for _, pt := range Types() {
 		t.Run(pt.ID, func(t *testing.T) {

@@ -36,6 +36,12 @@ func TestDetect(t *testing.T) {
 		{"node", map[string]string{"package.json": `{"name": "nodename", "version": "1.0.0"}`},
 			Detected{Type: "node", Name: "nodename"}},
 		{"node bad json", map[string]string{"package.json": `{nope`}, Detected{Type: "node"}},
+		{"deno", map[string]string{"deno.json": "{}", "package.json": `{"name":"x"}`}, Detected{Type: "deno"}},
+		{"gleam", map[string]string{"gleam.toml": "name = \"glm\"\nversion = \"1.0.0\"\n\n[dependencies]\nname = \"nope\"\n"},
+			Detected{Type: "gleam", Name: "glm"}},
+		{"zig", map[string]string{"build.zig": "", "build.zig.zon": ".{\n    .name = .ziggy,\n}\n"}, Detected{Type: "zig", Name: "ziggy"}},
+		{"typescript", map[string]string{"package.json": `{"name":"tsname"}`, "tsconfig.json": "{}"},
+			Detected{Type: "typescript", Name: "tsname"}},
 		{"rust", map[string]string{"Cargo.toml": "[package]\nname = 'rustname'\n[dependencies]\nname = \"nope\"\n"},
 			Detected{Type: "rust", Name: "rustname"}},
 	}
@@ -81,7 +87,7 @@ func TestComponentErrors(t *testing.T) {
 		t.Error("expected error for unknown component")
 	}
 	dockerfile, _ := LookupComponent("dockerfile")
-	for _, typ := range []string{"go-lib", "generic"} {
+	for _, typ := range []string{"go-lib", "gleam", "zig", "generic"} {
 		if _, err := RenderComponent(newOpts(t, typ), dockerfile); err == nil {
 			t.Errorf("dockerfile should not apply to %s", typ)
 		}
@@ -95,6 +101,7 @@ func TestComponentErrors(t *testing.T) {
 func TestDockerfileIsLanguageSpecific(t *testing.T) {
 	want := map[string]string{
 		"go-cli": "golang:", "go-service": "golang:", "python": "python:", "node": "node:", "rust": "rust:",
+		"typescript": "node:", "deno": "denoland/deno:",
 	}
 	c, _ := LookupComponent("dockerfile")
 	for typ, base := range want {

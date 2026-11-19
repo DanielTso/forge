@@ -31,6 +31,33 @@ make test    # cargo test
 make check   # fmt, clippy, test
 make run     # cargo run
 ```
+<% else if .IsTypeScript -%>
+```sh
+make install     # npm install
+make test        # compile and run node:test tests
+make check       # eslint, tsc type-check, tests
+make run         # build and run the CLI
+```
+<% else if .IsDeno -%>
+```sh
+make run     # deno run main.ts
+make test    # deno test
+make check   # fmt check, lint, type-check, test
+make build   # standalone binary in bin/
+```
+<% else if .IsGleam -%>
+```sh
+make run     # gleam run
+make test    # gleam test
+make check   # format check and tests
+```
+<% else if .IsZig -%>
+```sh
+make run     # zig build run
+make test    # zig build test
+make check   # zig fmt --check and tests
+make build   # release build into zig-out/
+```
 <% else -%>
 TODO: installation and usage instructions.
 <% end %>

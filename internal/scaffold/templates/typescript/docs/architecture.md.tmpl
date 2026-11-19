@@ -1,0 +1,20 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/index.ts` | Public API (ES module) |
+| `src/cli.ts` | Command-line entry point |
+| `test/` | Tests using Node's built-in `node:test` runner, run against the compiled output |
+| `tsconfig.json` | Strict TypeScript settings; `tsc` compiles `src/` and `test/` into `dist/` |
+| `eslint.config.js` | ESLint flat config with typescript-eslint |
+| `docs/` | Documentation and ADRs |
+
+TypeScript is pinned to 6.x: TypeScript 7 drops `tsserver`, which editor and AI-assistant language servers still use.
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

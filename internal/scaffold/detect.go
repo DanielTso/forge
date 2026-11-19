@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -37,6 +38,17 @@ func Detect(dir string) (Detected, error) {
 				d.Name = cmds[0]
 			}
 		}
+	case exists(dir, "deno.json") || exists(dir, "deno.jsonc"):
+		d.Type = "deno"
+	case exists(dir, "gleam.toml"):
+		d.Type = "gleam"
+		d.Name = tomlName(filepath.Join(dir, "gleam.toml"), "")
+	case exists(dir, "build.zig"):
+		d.Type = "zig"
+		d.Name = zonName(filepath.Join(dir, "build.zig.zon"))
+	case exists(dir, "package.json") && exists(dir, "tsconfig.json"):
+		d.Type = "typescript"
+		d.Name = packageJSONName(filepath.Join(dir, "package.json"))
 	case exists(dir, "pyproject.toml"):
 		d.Type = "python"
 		d.Name = tomlName(filepath.Join(dir, "pyproject.toml"), "project")
@@ -59,7 +71,7 @@ func tomlName(file, section string) string {
 	}
 	defer func() { _ = f.Close() }() // read-only: nothing to flush
 
-	in := false
+	in := section == "" // "" means the top-level table, before any [section]
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
@@ -76,6 +88,21 @@ func tomlName(file, section string) string {
 	}
 	return ""
 }
+
+// zonName returns the package name from a build.zig.zon (`.name = .foo,`), or "".
+func zonName(file string) string {
+	b, err := os.ReadFile(file)
+	if err != nil {
+		return ""
+	}
+	m := zonNameRe.FindSubmatch(b)
+	if m == nil {
+		return ""
+	}
+	return string(m[1])
+}
+
+var zonNameRe = regexp.MustCompile(`\.name\s*=\s*\.@?"?([A-Za-z_][A-Za-z0-9_]*)"?`)
 
 func packageJSONName(file string) string {
 	b, err := os.ReadFile(file)

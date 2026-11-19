@@ -1,0 +1,7 @@
+# syntax=docker/dockerfile:1
+FROM denoland/deno:2.9.8
+WORKDIR /app
+COPY . .
+RUN deno cache main.ts
+USER deno
+ENTRYPOINT ["deno", "run", "main.ts"]

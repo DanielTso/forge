@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Four new project types: `typescript` (strict TypeScript on Node, pinned to 6.x so language servers work,
+  node:test, typescript-eslint), `deno` (built-in fmt/lint/check/test), `gleam` (Erlang VM, gleeunit) and
+  `zig` (0.17, executable + library module, generated package fingerprint).
+- `forge add` detects these projects (`tsconfig.json`, `deno.json`, `gleam.toml`, `build.zig`); `dockerfile`
+  is available for `typescript` and `deno`.
+- forge's CI installs Python tools, Deno, Gleam/Erlang and Zig so every template is exercised on each push.
+
 ## [0.1.3] - 2026-11-19
 
 ### Added

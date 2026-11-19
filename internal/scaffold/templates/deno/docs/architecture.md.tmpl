@@ -1,0 +1,18 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `main.ts` | Entry point; `run()` holds the command-line logic so it can be tested |
+| `src/` | Library code, with `*_test.ts` tests beside each file |
+| `deno.json` | Tasks, imports (JSR) and formatter settings |
+| `docs/` | Documentation and ADRs |
+
+Deno includes the formatter, linter, type checker and test runner, so there is no separate tool config.
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

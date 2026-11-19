@@ -12,7 +12,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
-<%- else if .IsNode %>
+<%- else if .UsesNpm %>
   - package-ecosystem: npm
     directory: /
     schedule:

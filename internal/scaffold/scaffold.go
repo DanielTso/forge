@@ -3,8 +3,11 @@ package scaffold
 
 import (
 	"bytes"
+	crand "crypto/rand"
+	"encoding/binary"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io/fs"
 	"os"
 	"path"
@@ -30,6 +33,9 @@ type Options struct {
 	Type        string // project type ID
 	GoVersion   string // e.g. "1.27"
 	Year        int
+	// ZigFingerprint is build.zig.zon's package fingerprint: CRC32 of the package name in the
+	// high 32 bits and a random id in the low 32, as `zig init` makes it. Set for Zig projects only.
+	ZigFingerprint string
 }
 
 // File is a rendered file ready to be written.
@@ -52,6 +58,21 @@ func (o Options) IsNode() bool { return o.Lang() == "node" }
 
 // IsRust reports whether the project type is a Rust project.
 func (o Options) IsRust() bool { return o.Lang() == "rust" }
+
+// IsTypeScript reports whether the project type is a Node + TypeScript project.
+func (o Options) IsTypeScript() bool { return o.Lang() == "typescript" }
+
+// IsDeno reports whether the project type is a Deno project.
+func (o Options) IsDeno() bool { return o.Lang() == "deno" }
+
+// IsGleam reports whether the project type is a Gleam project.
+func (o Options) IsGleam() bool { return o.Lang() == "gleam" }
+
+// IsZig reports whether the project type is a Zig project.
+func (o Options) IsZig() bool { return o.Lang() == "zig" }
+
+// UsesNpm reports whether the project installs dependencies with npm.
+func (o Options) UsesNpm() bool { return o.IsNode() || o.IsTypeScript() }
 
 // HasMakefile reports whether the project type ships a Makefile.
 func (o Options) HasMakefile() bool { return o.Lang() != "" }
@@ -96,6 +117,20 @@ func SnakeName(name string) string {
 		out = "p" + out
 	}
 	return out
+}
+
+// zigFingerprint returns a build.zig.zon fingerprint for package name: the name's CRC32 in the
+// high 32 bits (Zig checks this) and a random id in the low 32, never 0 or 0xffffffff.
+func zigFingerprint(name string) (string, error) {
+	var b [4]byte
+	for {
+		if _, err := crand.Read(b[:]); err != nil {
+			return "", fmt.Errorf("generating zig fingerprint: %w", err)
+		}
+		if id := binary.BigEndian.Uint32(b[:]); id != 0 && id != 0xffffffff {
+			return fmt.Sprintf("0x%08x%08x", crc32.ChecksumIEEE([]byte(name)), id), nil
+		}
+	}
 }
 
 // PackageName derives a valid, lowercase Go package name from a project name.
@@ -147,6 +182,13 @@ func (o *Options) Normalize() error {
 	}
 	if o.Snake == "" {
 		o.Snake = SnakeName(o.Name)
+	}
+	if o.IsZig() && o.ZigFingerprint == "" {
+		fp, err := zigFingerprint(o.Snake)
+		if err != nil {
+			return err
+		}
+		o.ZigFingerprint = fp
 	}
 	if o.Module == "" {
 		o.Module = o.Name

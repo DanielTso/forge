@@ -25,7 +25,7 @@ ok   github.com/you/todo-app/internal/app   coverage: 100.0% of statements
 |---|---|
 | Install forge | [Installation](Installation) |
 | Make your first project in 5 minutes | [Quick Start](Quick-Start) |
-| Choose between Go, Python, Node, Rust… | [Project Types](Project-Types) |
+| Choose between Go, Python, TypeScript, Deno, Rust, Gleam, Zig… | [Project Types](Project-Types) |
 | Add CI, Docker or a license to an existing project | [Adding Components](Adding-Components) |
 | Build with Claude or another AI assistant | [Using forge with AI](Using-forge-with-AI) |
 | Look up a flag | [Command Reference](Command-Reference) |
@@ -98,7 +98,11 @@ forge itself needs nothing else. To *run* the projects it creates you need that 
 | `go-cli`, `go-service`, `go-lib` | Go; optionally [golangci-lint](https://golangci-lint.run) for `make lint` |
 | `python` | Python 3.10+ (the Makefile creates a private `.venv`) |
 | `node` | Node.js 20+ |
+| `typescript` | Node.js 22+ |
+| `deno` | [Deno](https://deno.com) 2.x |
 | `rust` | Rust via [rustup](https://rustup.rs) |
+| `gleam` | [Gleam](https://gleam.run) and Erlang/OTP |
+| `zig` | [Zig](https://ziglang.org) 0.17.1 |
 | Any `Dockerfile` | Docker |
 
 Next: [Quick Start](Quick-Start)
@@ -203,6 +207,10 @@ notes = {
  "python": ("A Python package with a command-line entry point.", "Code lives in `src/<name>/` (the *src layout*, which makes tests run against the installed package). Tests use pytest, style uses ruff, types use mypy (strict). Run `make install` first; it creates a private `.venv`.", "make install · make test · make run · make check"),
  "node": ("A Node.js command-line tool or library (ES modules).", "`src/index.js` is the library, `bin/<name>.js` the command. Tests use Node's built-in runner, so `npm test` works with no downloads; ESLint checks style after `npm install`.", "make install · make test · make lint · make run"),
  "rust": ("A Rust program with its logic in a library crate.", "`src/lib.rs` holds the logic (easy to unit-test); `src/main.rs` is a thin binary; `tests/cli.rs` runs the real compiled program. `make check` runs rustfmt, clippy (warnings are errors) and the tests.", "make test · make run · make check"),
+ "typescript": ("TypeScript on Node.js, for CLIs, APIs and libraries.", "`src/` holds the code and `test/` the tests; `tsc` compiles both into `dist/` and Node's built-in test runner runs them. Strict compiler settings catch mistakes early, and ESLint uses typescript-eslint. TypeScript is pinned to 6.x because TypeScript 7 removed `tsserver`, which code-intelligence tools (including Claude's language server) still need. Run `make install` first.", "make install · make test · make check · make run"),
+ "deno": ("TypeScript with Deno, the all-in-one runtime.", "No config to maintain: Deno has its own formatter, linter, type checker and test runner (`make check` runs all four). `main.ts` is the entry point and `src/` holds the code, with `*_test.ts` files beside it. `make build` compiles a single standalone binary.", "make run · make test · make check · make build"),
+ "gleam": ("Gleam, a friendly type-safe language that runs on the Erlang VM.", "`src/<name>.gleam` holds the code, and tests in `test/` use gleeunit (public functions ending in `_test`). The formatter is part of the compiler, and dependencies come from Hex. Needs Gleam and Erlang/OTP installed.", "make run · make test · make check"),
+ "zig": ("Zig, a fast systems language and a modern alternative to C.", "`src/root.zig` is the library (with its tests inline) and `src/main.zig` is the program. `build.zig` defines `zig build`, `zig build run` and `zig build test`. `build.zig.zon` holds the package name and a generated fingerprint that Zig requires. Targets Zig 0.17.1; Zig is pre-1.0, so expect template updates as it changes.", "make run · make test · make check · make build"),
  "generic": ("Any language, or docs-only projects.", "Only the shared, language-neutral files. Use it for documentation repos, or languages forge has no template for yet.", "(no Makefile)"),
 }
 pt = ["# Project Types\n\nPick the type with `-t` / `--type` (default `go-cli`), or choose from the menu in `forge new`.\n\n| Type | Best for |\n|---|---|\n"]
@@ -226,7 +234,7 @@ pt.append("""
 """)
 for t,(best,detail,cmds) in notes.items():
     pt.append(f"## {t}\n\n{best} {detail}\n\n```sh\nforge new my-{t} -t {t}\n```\n\n```text\n{tree(t)}\n```\n\n**Common commands:** {cmds}\n\n")
-pt.append("To add a Dockerfile to `go-cli`, `python`, `node` or `rust` projects: `forge add dockerfile`. See [Adding Components](Adding-Components).\n")
+pt.append("To add a Dockerfile to `go-cli`, `python`, `node`, `typescript`, `deno` or `rust` projects: `forge add dockerfile`. See [Adding Components](Adding-Components).\n")
 P["Project-Types"] = "".join(pt)
 
 P["Adding-Components"] = """# Adding Components
@@ -249,6 +257,10 @@ forge looks at the folder to work out the language:
 | `pyproject.toml` | `python` (name read from `[project]`) |
 | `package.json` | `node` (name read from `"name"`) |
 | `Cargo.toml` | `rust` (name read from `[package]`) |
+| `deno.json` | `deno` |
+| `gleam.toml` | `gleam` (name read from the top-level `name`) |
+| `build.zig` | `zig` (name read from `build.zig.zon`) |
+| `package.json` and `tsconfig.json` | `typescript` (name read from `"name"`) |
 | none of these | `generic` |
 
 So `forge add ci` gives a Python project a workflow that runs ruff, mypy and pytest, and a Rust project one that runs rustfmt, clippy and cargo test. Override detection with `--type`, and the name with `--name`.
@@ -275,7 +287,7 @@ $ forge add dependabot github                # keep deps current + issue/PR temp
 
 - **Nothing is overwritten** unless you pass `--force`. If even one file already exists, forge writes nothing and lists the conflicts.
 - **All-or-nothing:** a typo in any component name (`forge add docs nope`) aborts before anything is written.
-- **Some pieces don't fit some types:** `dockerfile` is refused for libraries and `generic` projects; `ci` needs a language.
+- **Some pieces don't fit some types:** `dockerfile` is refused for libraries, `gleam`, `zig` and `generic` projects; `ci` needs a language.
 """
 
 P["Interactive-Mode"] = """# Interactive Mode
@@ -309,7 +321,7 @@ Project name: 1bad
   invalid project name "1bad": must start with a letter and contain only letters, digits, '.', '_' or '-'
 Project name: good-name
 Choose [1]: 99
-  enter a number between 1 and 7, or a type name
+  enter a number between 1 and 11, or a type name
 ```
 
 ## Example: mix flags and questions
@@ -321,7 +333,7 @@ forge new my-api -t go-service -i
 Asks only for the description, module path, author and license.
 """
 
-P["Command-Reference"] = "# Command Reference\n\nOutput of each command's `--help`, from forge v0.1.3.\n\n" + "".join(
+P["Command-Reference"] = "# Command Reference\n\nOutput of each command's `--help`, from forge v0.2.0.\n\n" + "".join(
     f"## `forge {c}`\n\n```text\n{helptext(*([c] if c else []), '--help')}\n```\n\n" for c in ["", "new", "init", "add"]
 ) + """## `forge list`
 

@@ -1,0 +1,15 @@
+//// <% .Description %>
+
+import gleam/io
+
+pub fn main() -> Nil {
+  io.println(greet(""))
+}
+
+/// Returns a greeting for `name`, or for the world if it is empty.
+pub fn greet(name: String) -> String {
+  case name {
+    "" -> "Hello, world!"
+    _ -> "Hello, " <> name <> "!"
+  }
+}

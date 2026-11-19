@@ -1,0 +1,20 @@
+<% if lt .Snake "gleeunit" -%>
+import <% .Snake %>
+import gleeunit
+
+<% else -%>
+import gleeunit
+import <% .Snake %>
+
+<% end -%>
+pub fn main() -> Nil {
+  gleeunit.main()
+}
+
+pub fn greet_named_test() {
+  assert <% .Snake %>.greet("Lucy") == "Hello, Lucy!"
+}
+
+pub fn greet_empty_test() {
+  assert <% .Snake %>.greet("") == "Hello, world!"
+}

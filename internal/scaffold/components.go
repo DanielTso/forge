@@ -22,7 +22,7 @@ type Component struct {
 
 var components = []Component{
 	{Name: "ci", Description: "GitHub Actions CI workflow", Patterns: []string{".github/workflows/*"}},
-	{Name: "dockerfile", Description: "Dockerfile and .dockerignore", Extra: "dockerfile", ExcludeTypes: []string{"go-lib", "generic"}},
+	{Name: "dockerfile", Description: "Dockerfile and .dockerignore", Extra: "dockerfile", ExcludeTypes: []string{"go-lib", "gleam", "zig", "generic"}},
 	{Name: "license", Description: "LICENSE file (see --license)", Patterns: []string{"LICENSE"}},
 	{Name: "gitignore", Description: ".gitignore for the project's language", Patterns: []string{".gitignore"}},
 	{Name: "editorconfig", Description: ".editorconfig", Patterns: []string{".editorconfig"}},

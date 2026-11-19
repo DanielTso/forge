@@ -37,7 +37,7 @@ dist/
 .coverage
 htmlcov/
 <% end -%>
-<% if .IsNode %>
+<% if .UsesNpm %>
 # Node
 node_modules/
 dist/
@@ -48,4 +48,20 @@ coverage/
 <% if .IsRust %>
 # Rust
 /target/
+<% end -%>
+<% if .IsDeno %>
+# Deno
+/bin/
+<% end -%>
+<% if .IsGleam %>
+# Gleam
+*.beam
+*.ez
+/build/
+erl_crash.dump
+<% end -%>
+<% if .IsZig %>
+# Zig
+.zig-cache/
+zig-out/
 <% end -%>

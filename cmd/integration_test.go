@@ -112,6 +112,41 @@ func TestGeneratedNonGoProjectsWork(t *testing.T) {
 			t.Log("no Python tools installed; ran syntax check only")
 		}
 	})
+	t.Run("typescript", func(t *testing.T) {
+		if _, err := exec.LookPath("npm"); err != nil {
+			t.Skip("npm not installed")
+		}
+		dir := gen(t, "typescript")
+		sh(t, dir, "npm", "install", "--no-audit", "--no-fund") // needs network: typescript, eslint
+		sh(t, dir, "npm", "run", "lint")
+		sh(t, dir, "npm", "run", "typecheck")
+		sh(t, dir, "npm", "test")
+	})
+	t.Run("deno", func(t *testing.T) {
+		if _, err := exec.LookPath("deno"); err != nil {
+			t.Skip("deno not installed")
+		}
+		sh(t, gen(t, "deno"), "deno", "task", "check") // fmt --check, lint, check, test
+	})
+	t.Run("gleam", func(t *testing.T) {
+		if _, err := exec.LookPath("gleam"); err != nil {
+			t.Skip("gleam not installed")
+		}
+		if _, err := exec.LookPath("erl"); err != nil {
+			t.Skip("erlang (erl) not installed")
+		}
+		dir := gen(t, "gleam")
+		sh(t, dir, "gleam", "format", "--check", "src", "test")
+		sh(t, dir, "gleam", "test") // downloads gleam_stdlib and gleeunit from Hex
+	})
+	t.Run("zig", func(t *testing.T) {
+		if _, err := exec.LookPath("zig"); err != nil {
+			t.Skip("zig not installed")
+		}
+		dir := gen(t, "zig")
+		sh(t, dir, "zig", "fmt", "--check", ".")
+		sh(t, dir, "zig", "build", "test") // also checks the build.zig.zon fingerprint
+	})
 	t.Run("rust", func(t *testing.T) {
 		if _, err := exec.LookPath("cargo"); err != nil {
 			t.Skip("cargo not installed")

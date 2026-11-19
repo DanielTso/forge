@@ -28,6 +28,8 @@ func TestGeneratedDockerfilesBuildAndRun(t *testing.T) {
 		{"python", []string{"Ada"}, "Hello, Ada!"},
 		{"node", []string{"Ada"}, "Hello, Ada!"},
 		{"rust", []string{"Ada"}, "Hello, Ada!"},
+		{"typescript", []string{"Ada"}, "Hello, Ada!"},
+		{"deno", []string{"Ada"}, "Hello, Ada!"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.typ, func(t *testing.T) {

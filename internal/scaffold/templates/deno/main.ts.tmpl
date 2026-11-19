@@ -1,0 +1,17 @@
+/**
+ * <% .Description %>
+ * @module
+ */
+import { greet } from "./src/greet.ts";
+
+/** Runs the command line and returns what it prints. */
+export function run(args: string[]): string {
+  if (args.includes("--help") || args.includes("-h")) {
+    return "Usage: <% .Name %> [name]";
+  }
+  return greet(args[0]);
+}
+
+if (import.meta.main) {
+  console.log(run(Deno.args));
+}

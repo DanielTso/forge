@@ -1,0 +1,36 @@
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: install
+install: ## Install dependencies
+	npm install
+
+.PHONY: build
+build: ## Compile TypeScript into dist/
+	npm run build
+
+.PHONY: run
+run: build ## Build and run the CLI
+	npm start --silent
+
+.PHONY: test
+test: ## Build and run tests
+	npm test
+
+.PHONY: lint
+lint: ## Lint with ESLint
+	npm run lint
+
+.PHONY: typecheck
+typecheck: ## Type-check without emitting
+	npm run typecheck
+
+.PHONY: check
+check: lint typecheck test ## Lint, type-check and test
+
+.PHONY: clean
+clean: ## Remove build output and dependencies
+	rm -rf dist node_modules coverage

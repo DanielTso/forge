@@ -1,0 +1,18 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/<% .Snake %>.gleam` | The main module; `main` is the entry point for `gleam run` |
+| `test/` | gleeunit tests: public functions ending in `_test` |
+| `gleam.toml` | Package name, version and Hex dependencies |
+| `docs/` | Documentation and ADRs |
+
+Gleam compiles to Erlang (the default) or JavaScript (`gleam run --target javascript`).
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

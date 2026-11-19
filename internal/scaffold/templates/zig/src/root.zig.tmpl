@@ -1,0 +1,23 @@
+//! <% .Description %>
+const std = @import("std");
+const Io = std.Io;
+
+/// Writes a greeting for `name`, or for the world if it is empty.
+pub fn greet(writer: *Io.Writer, name: []const u8) Io.Writer.Error!void {
+    const who = if (name.len == 0) "world" else name;
+    try writer.print("Hello, {s}!\n", .{who});
+}
+
+test "greet by name" {
+    var buf: [64]u8 = undefined;
+    var w: Io.Writer = .fixed(&buf);
+    try greet(&w, "Ziggy");
+    try std.testing.expectEqualStrings("Hello, Ziggy!\n", w.buffered());
+}
+
+test "greet the world when empty" {
+    var buf: [64]u8 = undefined;
+    var w: Io.Writer = .fixed(&buf);
+    try greet(&w, "");
+    try std.testing.expectEqualStrings("Hello, world!\n", w.buffered());
+}

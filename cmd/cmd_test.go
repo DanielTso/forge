@@ -110,7 +110,7 @@ func TestList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"go-cli", "go-service", "go-lib", "python", "node", "rust", "generic", "MIT"} {
+	for _, want := range []string{"go-cli", "go-service", "go-lib", "python", "node", "rust", "typescript", "deno", "gleam", "zig", "generic", "MIT"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("list output missing %q", want)
 		}
@@ -119,9 +119,13 @@ func TestList(t *testing.T) {
 
 func TestNewAllLanguageTypes(t *testing.T) {
 	want := map[string]string{
-		"python": "pyproject.toml",
-		"node":   "package.json",
-		"rust":   "Cargo.toml",
+		"python":     "pyproject.toml",
+		"node":       "package.json",
+		"rust":       "Cargo.toml",
+		"typescript": "tsconfig.json",
+		"deno":       "deno.json",
+		"gleam":      "gleam.toml",
+		"zig":        "build.zig.zon",
 	}
 	for typ, manifest := range want {
 		dir := t.TempDir()

@@ -1,0 +1,34 @@
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: deps
+deps: ## Download dependencies
+	gleam deps download
+
+.PHONY: build
+build: ## Compile the project
+	gleam build
+
+.PHONY: run
+run: ## Run the program
+	gleam run
+
+.PHONY: test
+test: ## Run tests
+	gleam test
+
+.PHONY: fmt
+fmt: ## Format code
+	gleam format src test
+
+.PHONY: check
+check: ## Format check and test
+	gleam format --check src test
+	gleam test
+
+.PHONY: clean
+clean: ## Remove build output
+	rm -rf build

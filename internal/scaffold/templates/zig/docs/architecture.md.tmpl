@@ -1,0 +1,20 @@
+# Architecture
+
+TODO: describe the major components of <% .Name %> and how they interact.
+
+## Layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/root.zig` | The library module (importable as `<% .Snake %>`), with its tests |
+| `src/main.zig` | The executable: argument handling and output |
+| `build.zig` | Build graph: `zig build`, `zig build run`, `zig build test` |
+| `build.zig.zon` | Package manifest: name, version, fingerprint, dependencies |
+| `docs/` | Documentation and ADRs |
+
+Zig is pre-1.0 and its standard library changes between releases. This project targets Zig 0.17.1
+(`minimum_zig_version`).
+
+## Decisions
+
+Record significant decisions as short ADRs in `docs/adr/` (one file per decision).

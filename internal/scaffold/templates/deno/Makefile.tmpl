@@ -1,0 +1,33 @@
+.DEFAULT_GOAL := help
+
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
+
+.PHONY: run
+run: ## Run the program
+	deno run main.ts
+
+.PHONY: test
+test: ## Run tests
+	deno test
+
+.PHONY: fmt
+fmt: ## Format code
+	deno fmt
+
+.PHONY: lint
+lint: ## Lint
+	deno lint
+
+.PHONY: check
+check: ## Format check, lint, type-check and test
+	deno task check
+
+.PHONY: build
+build: ## Compile a standalone binary into bin/
+	deno compile --output bin/<% .Name %> main.ts
+
+.PHONY: clean
+clean: ## Remove build output
+	rm -rf bin

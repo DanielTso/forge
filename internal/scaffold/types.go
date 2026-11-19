@@ -63,6 +63,30 @@ var projectTypes = []ProjectType{
 		NextSteps:   []string{"make test", "make run"},
 	},
 	{
+		ID: "typescript", Lang: "typescript",
+		Description: "TypeScript on Node (strict tsconfig, node:test, typescript-eslint, CI)",
+		Sets:        []string{"common", "typescript"},
+		NextSteps:   []string{"make install", "make test", "make run"},
+	},
+	{
+		ID: "deno", Lang: "deno",
+		Description: "Deno + TypeScript (built-in fmt, lint, check and test; no config)",
+		Sets:        []string{"common", "deno"},
+		NextSteps:   []string{"make test", "make run"},
+	},
+	{
+		ID: "gleam", Lang: "gleam",
+		Description: "Gleam on the Erlang VM (gleeunit tests, formatter, CI)",
+		Sets:        []string{"common", "gleam"},
+		NextSteps:   []string{"make test", "make run"},
+	},
+	{
+		ID: "zig", Lang: "zig",
+		Description: "Zig 0.17 executable + library module (zig build, tests, fmt, CI)",
+		Sets:        []string{"common", "zig"},
+		NextSteps:   []string{"make test", "make run"},
+	},
+	{
 		ID:          "generic",
 		Description: "Language-agnostic project: README, LICENSE, docs/, contributing guides",
 		Sets:        []string{"common"},
