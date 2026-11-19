@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `forge --version` showed `dev (none)` when installed with `go install`; it now reports the
+  module version (and the commit for local builds) from Go's embedded build info.
+
 ### Changed
 
 - Go Dockerfile accepts `VERSION` / `COMMIT` build args and stamps them into the binary;
